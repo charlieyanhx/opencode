@@ -27,10 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: ./.github/actions/setup-bun
-      - name: Check gateway and configuration
-        run: bun run pp:check
-      - name: Check app types
-        run: bun run --cwd packages/app typecheck
+      - name: Run repository and PP checks
+        run: bun run check
       - name: Test suite navigation configuration
         working-directory: packages/app
         run: bun test --conditions=solid --isolate --preload ./happydom.ts ./src/shell/pp/config.test.ts
