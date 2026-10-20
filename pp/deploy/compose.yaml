@@ -36,8 +36,8 @@ services:
       target: backend
     environment:
       OPENCODE_PASSWORD: ${OPENCODE_PASSWORD:?Set a random server password of at least 32 characters}
-      PP_ROUTER_API_KEY: ${PP_ROUTER_API_KEY:?Set a random internal router token of at least 32 characters}
-      PP_ROUTER_BASE_URL: http://router:8787/v1
+      PP_ROUTER_API_KEY: ${PP_ROUTER_API_KEY:?Set the shared PP router token of at least 32 characters}
+      PP_ROUTER_BASE_URL: ${PP_ROUTER_BASE_URL:?Set the HTTPS base URL of your shared PP router ending in /v1}
     volumes:
       - opencode-data:/var/lib/opencode
       - workspace:/workspace
@@ -51,9 +51,6 @@ services:
     read_only: true
     tmpfs:
       - /tmp:mode=1777
-    depends_on:
-      router:
-        condition: service_healthy
     healthcheck:
       test:
         - CMD
@@ -72,49 +69,9 @@ services:
       - ALL
     networks:
       - ingress
-      - models
-
-  router:
-    image: pp-code-router:local
-    build:
-      context: ../..
-      dockerfile: pp/deploy/Dockerfile
-      target: router
-    environment:
-      PP_ROUTER_CONFIG: /config/router.json
-      PP_ROUTER_API_KEY: ${PP_ROUTER_API_KEY:?Set a random internal router token of at least 32 characters}
-      PP_UPSTREAM_API_KEY: ${PP_UPSTREAM_API_KEY:?Set your upstream model provider API key}
-    volumes:
-      - type: bind
-        source: ./router.global.json
-        target: /config/router.json
-        read_only: true
-        bind:
-          create_host_path: false
-    read_only: true
-    tmpfs:
-      - /tmp:mode=1777
-    healthcheck:
-      test:
-        - CMD
-        - bun
-        - -e
-        - 'fetch("http://127.0.0.1:8787/health").then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
-      interval: 15s
-      timeout: 5s
-      retries: 3
-    restart: unless-stopped
-    init: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    networks:
-      - models
 
 networks:
   ingress:
-  models:
 
 volumes:
   workspace:

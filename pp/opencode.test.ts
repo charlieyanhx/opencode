@@ -1,8 +1,23 @@
 import { describe, expect, test } from "bun:test"
 import { configure } from "./router/src/config"
-import { openCodeConfig } from "./opencode"
+import { openCodeConfig, sharedRouterConfig } from "./opencode"
 
 describe("OpenCode router configuration", () => {
+  test("uses the existing PP router's automatic routing policy directly", () => {
+    const result = sharedRouterConfig("http://127.0.0.1:4000/v1/")
+    expect(result.model).toBe("pp/auto")
+    expect(result.providers.pp.settings).toEqual({
+      baseURL: "http://127.0.0.1:4000/v1",
+      apiKey: "{env:PP_ROUTER_API_KEY}",
+    })
+    expect(result.providers.pp.models.auto.capabilities.tools).toBe(true)
+    expect(result.providers.pp.models.auto.limit).toEqual({ context: 16384, output: 4096 })
+    expect(result.policies).toEqual([
+      { action: "provider.use", resource: "*", effect: "deny" },
+      { action: "provider.use", resource: "pp", effect: "allow" },
+    ])
+  })
+
   test("exposes only regional aliases and public model metadata", () => {
     const model = {
       baseURL: "https://example.invalid/v1",
@@ -58,6 +73,7 @@ describe("OpenCode router configuration", () => {
         { PP_ROUTER_API_KEY: "test-router-token-32-characters-long", UPSTREAM_KEY: "upstream" },
       )
       expect(() => openCodeConfig(config, baseURL)).toThrow("PP_ROUTER_BASE_URL")
+      expect(() => sharedRouterConfig(baseURL)).toThrow("PP_ROUTER_BASE_URL")
     },
   )
 })

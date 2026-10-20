@@ -1,5 +1,5 @@
 {
-  "model": "pp/coding",
+  "model": "pp/auto",
   "update": "disable",
   "share": "disabled",
   "policies": [
@@ -15,15 +15,15 @@
         "apiKey": "{env:PP_ROUTER_API_KEY}"
       },
       "models": {
-        "coding": {
-          "name": "PP Coding",
+        "auto": {
+          "name": "PP Auto",
           "capabilities": {
             "tools": true,
             "input": ["text"],
             "output": ["text"]
           },
           "limit": {
-            "context": 32768,
+            "context": 16384,
             "output": 4096
           }
         }

@@ -2,6 +2,51 @@ import type { Config } from "./router/src/config"
 
 /** Project only public model metadata; upstream credentials belong to the router. */
 export function openCodeConfig(config: Config, baseURL: string) {
+  const models = [...config.models].filter(([, route]) => route.regions.includes(config.region))
+  return providerConfig(
+    baseURL,
+    Object.fromEntries(
+      models.map(([alias, route]) => [
+        alias,
+        {
+          name: alias,
+          capabilities: { tools: route.toolCalling, input: ["text"], output: ["text"] },
+          limit: { context: route.contextWindow, output: route.maxOutputTokens },
+        },
+      ]),
+    ),
+    "Standalone Gateway",
+  )
+}
+
+/** Use the original PP router's automatic policy, including its provider fallbacks. */
+export function sharedRouterConfig(baseURL: string) {
+  return providerConfig(
+    baseURL,
+    {
+      auto: {
+        name: "PP Auto",
+        capabilities: { tools: true, input: ["text"], output: ["text"] },
+        // Conservative integration limits; the router also enforces its configured output cap.
+        limit: { context: 16384, output: 4096 },
+      },
+    },
+    "PP Model Router",
+  )
+}
+
+function providerConfig(
+  baseURL: string,
+  models: Record<
+    string,
+    {
+      name: string
+      capabilities: { tools: boolean; input: string[]; output: string[] }
+      limit: { context: number; output: number }
+    }
+  >,
+  name: string,
+) {
   const url = URL.parse(baseURL)
   if (
     !url ||
@@ -14,10 +59,10 @@ export function openCodeConfig(config: Config, baseURL: string) {
   ) {
     throw new Error("PP_ROUTER_BASE_URL must use HTTPS or loopback HTTP without credentials, query, or fragment")
   }
-  const models = [...config.models].filter(([, route]) => route.regions.includes(config.region))
-  if (!models.length) throw new Error("No models are available in this deployment region")
+  const first = Object.keys(models)[0]
+  if (!first) throw new Error("No models are available in this deployment region")
   return {
-    model: `pp/${models[0][0]}`,
+    model: `pp/${first}`,
     update: "disable",
     share: "disabled",
     policies: [
@@ -26,22 +71,13 @@ export function openCodeConfig(config: Config, baseURL: string) {
     ],
     providers: {
       pp: {
-        name: "PP Model Router",
+        name,
         package: "@ai-sdk/openai-compatible",
         settings: {
           baseURL: url.href.replace(/\/$/, ""),
           apiKey: "{env:PP_ROUTER_API_KEY}",
         },
-        models: Object.fromEntries(
-          models.map(([alias, route]) => [
-            alias,
-            {
-              name: alias,
-              capabilities: { tools: route.toolCalling, input: ["text"], output: ["text"] },
-              limit: { context: route.contextWindow, output: route.maxOutputTokens },
-            },
-          ]),
-        ),
+        models,
       },
     },
   }

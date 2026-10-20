@@ -1,12 +1,31 @@
 # PP Code
 
 The PP integration for the OpenCode fork: a suite shell, shared visual treatment,
-the existing language selector with PP English/Chinese translations, and an
-OpenAI-compatible model gateway with explicit regional routing.
+the existing language selector with PP English/Chinese translations, and a direct
+connection to the original PP model router's OpenAI-compatible endpoint.
 
 This release supports a **private, single-operator workspace**. It does not
 implement shared suite accounts, tenant isolation, usage billing, or automatic
 model selection based on task quality.
+
+## Existing PP router integration status
+
+The initial gateway in `pp/router` was created for this fork. It is retained as an
+explicit standalone option, but **shared mode is now the default**. Shared mode
+calls the original PP router directly and does not start that gateway.
+
+The existing project is [Principle-of-Procrastination/pp-router](https://github.com/Principle-of-Procrastination/pp-router),
+a FastAPI/LiteLLM router with English/Chinese complexity classification and model
+fallbacks. Its original `/chat` and `/chat/stream` endpoints accept text chat and
+emit a custom response/SSE format. The companion `opencode-compat` branch adds
+`/v1/chat/completions` for message history, tool calls/results and OpenAI streams,
+using that project's existing routing policy. Deploy that compatibility change
+before enabling shared mode; pointing OpenCode at the old `/chat` endpoint is not
+sufficient.
+
+On 2026-10-20, the backend and frontend addresses published in that project's
+README returned CloudBase `404 INVALID_HOST`. A working deployment endpoint is
+still needed. The local UI preview therefore has model providers disconnected.
 
 ## Run locally
 
@@ -21,24 +40,17 @@ export PATH="$PWD/pp/.local/toolchain/node_modules/.bin:$PATH"
 ```sh
 bun install --frozen-lockfile
 cp pp/.env.example pp/.env
-cp pp/router/config.example.json pp/router.local.json
 ```
 
 Edit `pp/.env`:
 
-- Generate separate random values of at least 32 characters for
-  `OPENCODE_PASSWORD` and `PP_ROUTER_API_KEY`.
-- Set `PP_UPSTREAM_API_KEY` to your model provider's credential.
+- Set `PP_ROUTER_MODE=shared` and `PP_ROUTER_BASE_URL` to the original router's
+  `/v1` endpoint. Local example: `http://127.0.0.1:4000/v1`. Remote endpoints require HTTPS.
+- Set `PP_ROUTER_API_KEY` to the router server's `PPROUTER_API_KEY` (at least 32
+  random characters). Keep StepFun/BigModel credentials on the router server.
+- Generate a different random value of at least 32 characters for `OPENCODE_PASSWORD`.
 - Optionally supply real PP suite URLs for home, chat and workflows.
   Links without configured URLs are hidden.
-
-Edit `pp/router.local.json`:
-
-- Set the provider's actual API base URL and model ID.
-- Select `cn` or `global`, and set each alias's allowed regions.
-- Verify the model's context window, maximum output tokens and tool-call support.
-  The example's limits are placeholders, not verified provider specifications.
-- Keep the local router bound to loopback. The launcher rejects a public bind.
 
 From the repository root:
 
@@ -47,20 +59,30 @@ bun run pp:dev
 ```
 
 Open `http://127.0.0.1:4444` and sign in with `OPENCODE_PASSWORD`. The launcher
-starts the router, backend and PP frontend, and shuts down its own processes when
-you exit. It does not replace the installed OpenCode service.
+starts the backend and PP frontend, connects to the existing router, and shuts
+down its own processes when you exit. It does not replace the installed OpenCode service.
 
 State is kept under ignored `pp/.local/`. Optional `PP_SERVER_PORT` and
 `PP_APP_PORT` environment variables change the backend and frontend ports.
-The router port is defined in its JSON configuration. All three ports must differ.
+The shared router must run separately on a different port or host.
 
-The launcher derives native OpenCode provider configuration from the router's
-allowed aliases and model metadata. Upstream API keys stay in the router process;
-the backend receives only the router credential, and the browser build receives
+The native `pp/auto` model delegates selection and fallback to PP's existing
+classifier. Integration limits are conservatively set to 16384 context tokens and
+4096 output tokens; the router also applies its own output cap. Verify the actual
+providers' tool behavior before live use. Upstream API keys stay on the router;
+the backend receives only the router credential, and the browser receives
 neither credential. Local project configuration and Claude skill discovery are
 disabled for this launcher, so they do not override its PP provider configuration.
 The coding agent still has the operator's filesystem/process privileges: this is
 not an execution sandbox.
+
+### Optional standalone gateway
+
+For isolated proxy development only, set `PP_ROUTER_MODE=standalone`, copy
+`pp/router/config.example.json` to `pp/router.local.json`, and configure
+`PP_UPSTREAM_API_KEY`, provider URL/model, region allowlists and verified model
+limits. The launcher then starts the fork's loopback gateway. This mode does not
+use PP's original classifier or fallback policy.
 
 ## Translation and styling
 
@@ -81,8 +103,8 @@ are separate from UI localization.
 - [Single-operator TLS deployment and China profile](deploy/README.md)
 - [Architecture and milestones](../PP-FORK-PLAN.md)
 
-China and international profiles use explicit regional model allowlists; region
-labels are operator-supplied policy and do not verify a provider's data residency.
+Shared deployments use the existing PP router's provider configuration and policy.
+The fork does not override its model selection or attest to provider data residency.
 The China profile uses an operator-provided TLS certificate. Application assets
 are served from the deployment; external integrations still require network testing
 from the actual deployment location.

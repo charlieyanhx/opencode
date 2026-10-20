@@ -2,7 +2,9 @@
 
 This stack runs **one trusted operator's coding workspace**. OpenCode can execute commands, read and edit files, install packages, and access credentials available inside its container. All signed-in clients share that workspace and the same server password. This is not a multi-user SaaS or an isolation boundary between users.
 
-The browser connects over HTTPS to Caddy. Caddy serves the built PP app and forwards `/api/*`, `/auth/*`, and `/openapi.json` to the authenticated OpenCode server without rewriting paths. The app uses its existing sign-in screen; enter the server password from `.env` (username `opencode` for API clients). Static sign-in assets are public; workspace APIs require authentication. WebSocket tickets and SSE streaming use the existing backend authentication. The model router has no published port and keeps the upstream provider key out of the backend and browser.
+The browser connects over HTTPS to Caddy. Caddy serves the built PP app and forwards `/api/*`, `/auth/*`, and `/openapi.json` to the authenticated OpenCode server without rewriting paths. The app uses its existing sign-in screen; enter the server password from `.env` (username `opencode` for API clients). Static sign-in assets are public; workspace APIs require authentication. WebSocket tickets and SSE streaming use the existing backend authentication.
+
+The backend calls the existing [PP model router](https://github.com/Principle-of-Procrastination/pp-router), a separate FastAPI/LiteLLM service. The `pp/auto` model uses its classifier and fallback routing through the OpenAI-compatible `/v1/chat/completions` endpoint. This stack contains only the web and backend containers. Provider credentials, model allowlists, route selection, and regional policy belong to the shared router; provider keys never enter this stack or the browser.
 
 ## Prepare
 
@@ -13,22 +15,17 @@ cp .env.example .env
 cp opencode.example.json opencode.json
 chmod 600 .env
 openssl rand -hex 32
-openssl rand -hex 32
 ```
 
-Edit `.env`: set the hostname, use the two different generated values for `OPENCODE_PASSWORD` and `PP_ROUTER_API_KEY`, and supply your provider key as `PP_UPSTREAM_API_KEY`. Do not put secrets in `VITE_*` variables; those values are compiled into browser JavaScript. Startup rejects missing credentials, and the server and router require credentials of at least 32 characters.
+Edit `.env`: set the hostname and use the generated value for `OPENCODE_PASSWORD`. Set `PP_ROUTER_BASE_URL` to your deployed shared router's HTTPS base URL ending in `/v1`. Set `PP_ROUTER_API_KEY` to the same value as that service's `PPROUTER_API_KEY`; use at least 32 random characters and keep it different from the OpenCode password. If the router has no key yet, generate another value and configure it on both services. Do not put secrets in `VITE_*` variables; those values are compiled into browser JavaScript. Startup rejects missing or short credentials and a router URL without HTTPS.
 
-Point your hostname's DNS to the host. Only ports 80 and 443 are published. Restrict access at your firewall or private network to the operator's devices when possible. Do not publish backend port 4096 or router port 8787, and do not mount the host Docker socket.
+Deploy a PP router revision that provides authenticated `/v1/models` and `/v1/chat/completions`, including streaming and tool calls. Historical URLs in the router repository are not a provisioned endpoint for this installation; supply and verify your own live service. Configure its provider credentials and permitted models there. The sample OpenCode limits are conservative (16384 context, 4096 output); every routed model must support those limits and text tool calls. Reduce them if your router's fallback pool includes a smaller model.
+
+Point your hostname's DNS to the host. Only ports 80 and 443 are published. Restrict access at your firewall or private network to the operator's devices when possible. Do not publish backend port 4096, and do not mount the host Docker socket. The backend needs outbound HTTPS access to your shared router.
 
 ## Global profile
 
-```sh
-cp router.global.example.json router.global.json
-```
-
-Edit `router.global.json` to choose the actual HTTPS OpenAI-compatible provider base URL and upstream model ID. Keep the `coding` alias in sync with `opencode.json`; this is the app's `pp/coding` model. The `.example` provider address deliberately cannot serve model requests.
-
-The sample context window of 32768, output limit of 4096, and tool-calling support are placeholders. Verify them against the selected model and set the same values in both `router.global.json` and `opencode.json`. Additional aliases also need matching entries in both files.
+Use a shared router endpoint with the providers and fallback policy approved for this deployment. The `auto` model is intentional: the shared service chooses the model rather than this application selecting a fixed provider.
 
 ```sh
 docker compose --env-file .env -f compose.yaml config --quiet
@@ -40,11 +37,10 @@ Caddy obtains and renews a TLS certificate for the supplied domain. Its certific
 ## Mainland China profile
 
 ```sh
-cp router.cn.example.json router.cn.json
 mkdir -p certs
 ```
 
-Edit `router.cn.json` to use the mainland endpoint and model approved for your deployment. Verify its placeholder context/output limits and tool-calling support, then match those values in `opencode.json`. Its region is `cn`, and the alias is allowed only in that region. There is no automatic fallback to a global provider. Region labels do not attest to where an endpoint stores data: confirm endpoint location and provider terms separately.
+Set `PP_ROUTER_BASE_URL` to a shared router deployment reachable from your mainland host. Configure that service's model allowlist and **every fallback** to use the endpoints approved for this deployment. The China Compose override changes TLS handling only; it does not impose regional routing rules on the remote service. Confirm model endpoint location, data handling, and provider terms separately before enabling requests.
 
 Place the certificate chain for your hostname in `certs/fullchain.pem` and its private key in `certs/privkey.pem`. Restrict private-key file permissions on the host. This profile uses your supplied certificate and does not require automatic certificate issuance at runtime.
 
@@ -75,25 +71,25 @@ The shell starts in `/workspace`. Install any project-specific toolchains in a d
 
 Verify these behaviors before relying on the deployment:
 
-1. `docker compose --env-file .env -f compose.yaml ps` reports healthy backend and router containers.
+1. `docker compose --env-file .env -f compose.yaml ps` reports a healthy backend and a running web container. Separately verify the shared router's authenticated `/v1/models` endpoint lists `auto`.
 2. A request to `/api/info` without credentials returns HTTP 401, while signing in succeeds.
-3. A `pp/coding` chat streams a real response and completes a harmless tool call in a disposable project.
+3. A `pp/auto` chat streams a real response and completes a harmless tool call in a disposable project; router-side logs confirm the intended provider and fallback policy.
 4. The terminal opens, reconnects, and streams output through HTTPS.
 5. Language selection persists across reload; UI scripts and fonts load from your own hostname.
 6. Restarting the stack preserves the project files and chat history.
 
-Use the additional `-f compose.cn.yaml` on mainland commands. Container health checks confirm local process readiness, not upstream credentials, provider reachability, or model compatibility.
+Use the additional `-f compose.cn.yaml` on mainland commands. The backend health check confirms local process readiness, not router credentials, provider reachability, or model compatibility.
 
 ## Persistence, upgrades, and recovery
 
-Named volumes persist `/workspace`, the operator home, OpenCode data/config/cache/state, and Caddy certificate data. The backend runs as the image's non-root `bun` user. Code execution shares the backend's router token, server password, and workspace; upstream provider keys are present only in the separate router container.
+Named volumes persist `/workspace`, the operator home, OpenCode data/config/cache/state, and Caddy certificate data. The backend runs as the image's non-root `bun` user. Code execution shares the backend's router token, server password, and workspace; provider keys remain with the separate shared PP router service. Back up and upgrade that service independently.
 
 Before an upgrade, stop the stack and back up the named volumes and the private host configuration. Rebuild images from a recorded fork commit, then start and run the verification checklist. Keep the prior images and corresponding volume backup for rollback: database migrations can make rolling back just the image insufficient. `docker compose down` preserves named volumes; adding `--volumes` deletes them.
 
-Changing optional suite URLs requires rebuilding the web image. Rotating the server password invalidates existing authenticated sessions and requires signing in again.
+Changing optional suite URLs requires rebuilding the web image. Rotating the server password invalidates existing authenticated sessions and requires signing in again. Coordinate router-token rotation with `PPROUTER_API_KEY` on the shared service and recreate the backend so its environment is updated.
 
 ## Verification status
 
-The paths, password environment variable, `/api/info` health route, CLI `serve` flags, XDG storage directories, and production same-origin API behavior were checked against this fork's source. Both Compose definitions passed configuration validation. The actual backend command started under Bun 1.4.2 from a temporary workspace with this deployment's OpenCode configuration; `/api/info` returned 401 without credentials and 200 with the configured password.
+The paths, password environment variable, `/api/info` health route, CLI `serve` flags, XDG storage directories, and production same-origin API behavior were checked against this fork's source. Previous local backend checks returned 401 without credentials and 200 with the configured password; both Caddy profiles passed configuration adaptation. The revised two-container Compose profiles pass configuration validation without a Docker daemon.
 
-The local Docker daemon was unavailable, and no standalone Caddy binary was installed. Image build, Caddy configuration validation, live TLS, browser sessions through this proxy, paid model calls, and mainland network reachability remain unverified.
+Image build, live TLS, browser sessions through this proxy, requests to an operator-provided shared router, paid model calls, and mainland network reachability remain unverified. Configuration validation does not establish that the shared router is deployed or accessible.

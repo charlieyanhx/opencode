@@ -4,7 +4,13 @@ Status: fork created, 2026-10-20. GitHub fork:
 https://github.com/charlieyanhx/opencode. Local working branch: `pp-suite`.
 Remote `origin` retains upstream; remote `pp` points to the fork.
 Implementation is on `pp-suite`; see `pp/README.md` for the local launcher,
-gateway and deployment setup. No hosted deployment has been made.
+shared-router connection and deployment setup. No hosted deployment has been made.
+
+The router of record is https://github.com/Principle-of-Procrastination/pp-router.
+The fork defaults to its `/v1` compatibility API and `auto` model, preserving its
+English/Chinese classifier and LiteLLM fallback policy. The companion
+`opencode-compat` branch adds the tool-preserving compatibility API. The fork's
+initial gateway remains an explicit standalone development option only.
 
 ## Product direction
 
@@ -67,7 +73,9 @@ usage and fallback reason. No cross-region fallback by default.
 
 Acceptance: streaming, tool calls, cancellation, usage reporting, tenant isolation,
 budget rejection, and regional denial are covered by gateway integration tests.
-Evaluate whether an existing PP router satisfies this contract before building one.
+Implement compatibility in the existing PP router instead of duplicating its
+classifier or fallback policy. Tenant isolation and budget controls remain later
+milestones; this delivery uses a private shared service token.
 
 ### 3. Shared PP shell and styling
 

@@ -1,5 +1,7 @@
 {
-  "model": "pp/coding",
+  "model": "pp/auto",
+  "update": "disable",
+  "share": "disabled",
   "policies": [
     { "action": "provider.use", "resource": "*", "effect": "deny" },
     { "action": "provider.use", "resource": "pp", "effect": "allow" }
@@ -13,8 +15,17 @@
         "apiKey": "{env:PP_ROUTER_API_KEY}"
       },
       "models": {
-        "coding": {
-          "name": "PP Coding"
+        "auto": {
+          "name": "PP Auto",
+          "capabilities": {
+            "tools": true,
+            "input": ["text"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 16384,
+            "output": 4096
+          }
         }
       }
     }

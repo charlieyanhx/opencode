@@ -14,11 +14,3 @@ services:
         read_only: true
         bind:
           create_host_path: false
-  router:
-    volumes:
-      - type: bind
-        source: ./router.cn.json
-        target: /config/router.json
-        read_only: true
-        bind:
-          create_host_path: false

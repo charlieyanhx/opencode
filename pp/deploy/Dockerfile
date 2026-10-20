@@ -39,13 +39,6 @@ WORKDIR /workspace
 EXPOSE 4096
 ENTRYPOINT ["/app/pp/deploy/backend-entrypoint.sh"]
 
-FROM ${BUN_IMAGE} AS router
-WORKDIR /app
-COPY pp/router /app/pp/router
-USER bun
-EXPOSE 8787
-CMD ["bun", "pp/router/src/index.ts"]
-
 FROM ${CADDY_IMAGE} AS web
 COPY --from=app-build /app/packages/app/dist /srv
 COPY pp/deploy/Caddyfile /etc/caddy/Caddyfile
