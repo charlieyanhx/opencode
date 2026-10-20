@@ -1,0 +1,4 @@
+.local/
+.env*
+!.env.example
+router.local.json

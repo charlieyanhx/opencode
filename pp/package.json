@@ -1,0 +1,9 @@
+{
+  "name": "@pp/opencode-integration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test --only-failures"
+  }
+}

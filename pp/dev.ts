@@ -1,0 +1,119 @@
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+import { loadConfig } from "./router/src/config"
+import { start } from "./router/src/index"
+import { openCodeConfig } from "./opencode"
+
+const root = fileURLToPath(new URL("../", import.meta.url))
+const config = await loadConfig(path.resolve(root, process.env.PP_ROUTER_CONFIG ?? "pp/router.local.json"))
+if (!process.env.OPENCODE_PASSWORD || process.env.OPENCODE_PASSWORD.length < 32) {
+  throw new Error("Set OPENCODE_PASSWORD to a random password of at least 32 characters in pp/.env")
+}
+if (process.env.OPENCODE_PASSWORD === process.env.PP_ROUTER_API_KEY) {
+  throw new Error("Use different passwords for OpenCode and the model router")
+}
+if (!["127.0.0.1", "localhost", "::1"].includes(config.hostname) || config.port === 0) {
+  throw new Error("Local development requires a loopback router hostname and a nonzero port")
+}
+const serverPort = port(process.env.PP_SERVER_PORT, 4096)
+const appPort = port(process.env.PP_APP_PORT, 4444)
+if (new Set([serverPort, appPort, config.port]).size !== 3) {
+  throw new Error("The app, server and router must use different ports")
+}
+const state = path.join(root, "pp/.local")
+const routerHost = config.hostname === "::1" ? "[::1]" : config.hostname
+const secrets = new Set([...config.models.values()].map((route) => route.apiKeyEnv))
+const environment = Object.fromEntries(
+  Object.entries(process.env).filter(
+    ([key]) => !secrets.has(key) && (!key.startsWith("OPENCODE_") || key === "OPENCODE_PASSWORD"),
+  ),
+)
+const backend = {
+  ...environment,
+  XDG_DATA_HOME: path.join(state, "data"),
+  XDG_CACHE_HOME: path.join(state, "cache"),
+  XDG_CONFIG_HOME: path.join(state, "config"),
+  XDG_STATE_HOME: path.join(state, "state"),
+  OPENCODE_CONFIG_DIR: path.join(state, "config/opencode"),
+  OPENCODE_CONFIG_PROJECT_DISABLE: "1",
+  OPENCODE_DISABLE_CLAUDE_CODE: "1",
+  OPENCODE_DISABLE_MODELS_FETCH: "1",
+  OPENCODE_DISABLE_AUTOUPDATE: "1",
+  OPENCODE_CONFIG_CONTENT: JSON.stringify(openCodeConfig(config, `http://${routerHost}:${config.port}/v1`)),
+}
+// Vite receives public build settings, never the router credential or server password.
+const frontend = Object.fromEntries(
+  Object.entries(environment).filter(([key]) => key !== "PP_ROUTER_API_KEY" && key !== "OPENCODE_PASSWORD"),
+)
+const router = start(config)
+const children: Bun.Subprocess[] = []
+let stopping = false
+function stop() {
+  stopping = true
+  router.stop(true)
+  for (const child of children) child.kill("SIGTERM")
+}
+process.once("SIGINT", stop)
+process.once("SIGTERM", stop)
+try {
+  children.push(
+    Bun.spawn(
+      [
+        process.execPath,
+        "run",
+        "--cwd",
+        "packages/cli",
+        "src/index.ts",
+        "serve",
+        "--hostname",
+        "127.0.0.1",
+        "--port",
+        String(serverPort),
+        "--cors",
+        `http://127.0.0.1:${appPort}`,
+      ],
+      { cwd: root, env: backend, stdout: "inherit", stderr: "inherit" },
+    ),
+  )
+  children.push(
+    Bun.spawn(
+      [
+        process.execPath,
+        "run",
+        "--cwd",
+        "packages/app",
+        "dev",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        String(appPort),
+        "--strictPort",
+      ],
+      {
+        cwd: root,
+        env: {
+          ...frontend,
+          VITE_PP_ENABLED: "true",
+          VITE_OPENCODE_SERVER_MODE: "origin",
+          VITE_OPENCODE_SERVER_HOST: "127.0.0.1",
+          VITE_OPENCODE_SERVER_PORT: String(serverPort),
+        },
+        stdout: "inherit",
+        stderr: "inherit",
+      },
+    ),
+  )
+  console.log(`PP development UI: http://127.0.0.1:${appPort}`)
+  console.log("Sign in with the OPENCODE_PASSWORD from pp/.env. Local state lives in pp/.local.")
+  const code = await Promise.race(children.map((child) => child.exited))
+  if (!stopping) process.exitCode = code || 1
+} finally {
+  stop()
+  await Promise.all(children.map((child) => child.exited))
+}
+
+function port(value: string | undefined, fallback: number) {
+  const result = value === undefined ? fallback : Number(value)
+  if (!Number.isInteger(result) || result < 1 || result > 65535) throw new Error("PP ports must be between 1 and 65535")
+  return result
+}

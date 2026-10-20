@@ -1,0 +1,88 @@
+.pp-suite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  flex-shrink: 0;
+  padding: 10px 16px;
+  padding-top: max(10px, env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--v2-border-border-muted);
+  background: var(--v2-background-bg-base);
+  color: var(--v2-text-text-base);
+  font-size: 13px;
+  line-height: var(--line-height-base, 20px);
+}
+.pp-brand,
+.pp-navigation,
+.pp-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pp-brand {
+  flex-shrink: 0;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.pp-mark {
+  display: grid;
+  place-items: center;
+  inline-size: 30px;
+  block-size: 30px;
+  border: 1px solid var(--v2-border-border-muted);
+  border-radius: 9px;
+  background: var(--v2-background-bg-layer-02);
+}
+.pp-navigation {
+  flex-wrap: wrap;
+  min-inline-size: 0;
+}
+.pp-controls {
+  margin-inline-start: auto;
+  min-inline-size: 0;
+}
+.pp-navigation a,
+.pp-controls button,
+.pp-controls select {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 36px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--v2-text-text-base);
+  background: transparent;
+  font: inherit;
+}
+.pp-controls select {
+  max-inline-size: 160px;
+  border: 1px solid var(--v2-border-border-muted);
+}
+.pp-controls option {
+  color: var(--v2-text-text-base);
+  background: var(--v2-background-bg-base);
+}
+.pp-navigation a[data-active],
+.pp-navigation a:hover,
+.pp-controls button:hover {
+  background: var(--v2-background-bg-layer-02);
+}
+.pp-suite :is(a, button, select):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .pp-suite {
+    gap: 8px;
+    padding-inline: 10px;
+  }
+  .pp-navigation {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .pp-controls {
+    gap: 2px;
+  }
+  .pp-controls select {
+    max-inline-size: 120px;
+  }
+}

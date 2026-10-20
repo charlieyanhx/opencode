@@ -1,4 +1,8 @@
 interface ImportMetaEnv {
+  readonly VITE_PP_ENABLED?: string
+  readonly VITE_PP_HOME_URL?: string
+  readonly VITE_PP_CHAT_URL?: string
+  readonly VITE_PP_FLOW_URL?: string
   readonly VITE_OPENCODE_SERVER_MODE?: "none" | "origin"
   readonly VITE_OPENCODE_SERVER_HOST: string
   readonly VITE_OPENCODE_SERVER_PORT: string

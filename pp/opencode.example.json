@@ -1,0 +1,22 @@
+{
+  "model": "pp/coding",
+  "policies": [
+    { "action": "provider.use", "resource": "*", "effect": "deny" },
+    { "action": "provider.use", "resource": "pp", "effect": "allow" }
+  ],
+  "providers": {
+    "pp": {
+      "name": "PP Model Router",
+      "package": "@ai-sdk/openai-compatible",
+      "settings": {
+        "baseURL": "{env:PP_ROUTER_BASE_URL}",
+        "apiKey": "{env:PP_ROUTER_API_KEY}"
+      },
+      "models": {
+        "coding": {
+          "name": "PP Coding"
+        }
+      }
+    }
+  }
+}

@@ -157,14 +157,14 @@ export function Titlebar(props: { verticalTabs?: { mount?: HTMLElement } }) {
             ? bottom()
               ? "calc(28px + max(8px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))))"
               : mobileTop()
-                ? `calc(28px + ${mobileTopClearance} + env(safe-area-inset-top, 0px))`
-                : "calc(28px + max(8px, env(safe-area-inset-top, 0px)))"
+                ? `calc(28px + ${mobileTopClearance} + var(--shell-safe-area-top, env(safe-area-inset-top, 0px)))`
+                : "calc(28px + max(8px, var(--shell-safe-area-top, env(safe-area-inset-top, 0px))))"
             : undefined,
         "padding-top": bottom()
           ? "0px"
           : mobileTop()
-            ? `calc(${mobileTopClearance} + env(safe-area-inset-top, 0px))`
-            : "env(safe-area-inset-top, 0px)",
+            ? `calc(${mobileTopClearance} + var(--shell-safe-area-top, env(safe-area-inset-top, 0px)))`
+            : "var(--shell-safe-area-top, env(safe-area-inset-top, 0px))",
         "padding-bottom": bottom() ? "var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))" : "0px",
         "min-height": minHeight(),
         // Keep native macOS traffic lights clear even when the desktop window is narrow.

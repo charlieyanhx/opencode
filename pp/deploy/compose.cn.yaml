@@ -1,0 +1,24 @@
+# Apply after compose.yaml. Supply a certificate for your own mainland hostname.
+services:
+  web:
+    volumes:
+      - type: bind
+        source: ./Caddyfile.cn
+        target: /etc/caddy/Caddyfile
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./certs
+        target: /etc/caddy/certs
+        read_only: true
+        bind:
+          create_host_path: false
+  router:
+    volumes:
+      - type: bind
+        source: ./router.cn.json
+        target: /config/router.json
+        read_only: true
+        bind:
+          create_host_path: false

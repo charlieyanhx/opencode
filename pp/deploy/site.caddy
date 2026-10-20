@@ -1,0 +1,39 @@
+encode zstd gzip
+
+header {
+	Strict-Transport-Security "max-age=31536000"
+	X-Content-Type-Options nosniff
+	Referrer-Policy same-origin
+	X-Frame-Options DENY
+}
+
+# These paths already contain /api; stripping it breaks the OpenCode protocol.
+@backend path /api /api/* /auth /auth/* /openapi.json
+@private path *.map /_headers /_redirects
+@assets path /_assets/* /assets/* /icons/*
+
+# Preserve this order so asset source maps are rejected before static serving.
+route {
+	handle @backend {
+		reverse_proxy backend:4096 {
+			flush_interval -1
+		}
+	}
+
+	handle @private {
+		respond 404
+	}
+
+	# Missing assets must remain 404s, rather than returning the SPA document.
+	handle @assets {
+		root * /srv
+		file_server
+	}
+
+	handle {
+		root * /srv
+		header Cache-Control no-cache
+		try_files {path} /index.html
+		file_server
+	}
+}

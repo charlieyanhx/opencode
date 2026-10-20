@@ -28,7 +28,10 @@ export function createWebPlatform(version: string) {
 
       const notification = new Notification(title, {
         body: description ?? "",
-        icon: "https://opencode.ai/favicon-96x96-v3.png",
+        icon:
+          import.meta.env.VITE_PP_ENABLED === "true"
+            ? document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.href
+            : "https://opencode.ai/favicon-96x96-v3.png",
       })
 
       notification.onclick = () => {

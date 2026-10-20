@@ -2,6 +2,13 @@ import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
 
 export const dict = {
   ...DESKTOP_NATIVE_ENGLISH,
+  "pp.mark": "PP",
+  "pp.code": "PP Code",
+  "pp.suite": "PP Suite",
+  "pp.chat": "PP Chat",
+  "pp.flow": "PP Flow",
+  "pp.workspace": "Workspace",
+  "pp.navigation": "PP suite navigation",
   "session.location.unavailable": "Session location unavailable",
   "session.location.description": "Choose another directory to continue this session.",
   "session.location.choose": "Choose directory",

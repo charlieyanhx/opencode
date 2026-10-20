@@ -3,6 +3,13 @@ import en from "./en"
 type Keys = keyof typeof en
 
 export const dict = {
+  "pp.mark": "PP",
+  "pp.code": "PP Code",
+  "pp.suite": "PP Suite",
+  "pp.chat": "PP Chat",
+  "pp.flow": "PP Flow",
+  "pp.workspace": "工作区",
+  "pp.navigation": "PP 套件导航",
   "desktop.menu.app": "OpenCode",
   "desktop.menu.file": "文件",
   "desktop.menu.edit": "编辑",

@@ -1,0 +1,40 @@
+name: PP integration
+
+on:
+  push:
+    branches: [pp-suite]
+  pull_request:
+    paths:
+      - "pp/**"
+      - "packages/app/**"
+      - "packages/ui/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/pp.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: ./.github/actions/setup-bun
+      - name: Check gateway and configuration
+        run: bun run pp:check
+      - name: Check app types
+        run: bun run --cwd packages/app typecheck
+      - name: Test suite navigation configuration
+        working-directory: packages/app
+        run: bun test --conditions=solid --isolate --preload ./happydom.ts ./src/shell/pp/config.test.ts
+      - name: Build PP browser app
+        run: bun run --cwd packages/app build
+        env:
+          VITE_PP_ENABLED: "true"
