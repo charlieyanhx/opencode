@@ -28,6 +28,9 @@
   reporting was empty during those checks. Preview providers are disconnected.
 - Shared deployment Compose profiles, entrypoint shell syntax and JSON examples
   passed focused checks after removing the standalone router service.
+- Shared-router connection commit `96827f9` passed the full hosted lint/type checks,
+  PP tests, suite-link tests and PP browser build:
+  https://github.com/charlieyanhx/opencode/actions/runs/39499932650.
 
 ## Remaining validation
 
