@@ -4,8 +4,9 @@
 
 - Bun 1.4.2 locked dependency installation.
 - Baseline upstream browser production build.
-- App type check with the initial PP shell; final review corrections are also
-  covered by the hosted PP workflow.
+- Final repository lint/type checks, PP tests, suite-link tests and PP production
+  build passed on the hosted runner for implementation commit `7cc0599`:
+  https://github.com/charlieyanhx/opencode/actions/runs/39483503366.
 - PP router/configuration suite: 28 tests passed. The router's 24 HTTP/config
   cases also passed 10 repeated runs before integration.
 - Suite-link validation: 8 tests passed.
@@ -21,12 +22,11 @@
 
 ## Remaining validation
 
-- Final PP production build and app type check: hosted `.github/workflows/pp.yml`.
 - Browser visual/interaction QA: pending. The earlier preview did not complete
   loading, and local browser/build checks were deferred when the user's 8 GB Mac
   reported warning-level memory pressure and increasing swap usage.
-- Full monorepo check was not completed; focused integration checks are recorded
-  above. Avoid running its concurrent type checks on a memory-constrained machine.
+- The full monorepo check passed in hosted CI. Avoid running its concurrent type
+  checks on a memory-constrained machine.
 - Container image build, container startup and deployed TLS: Docker daemon was not
   running on the development machine.
 - Live provider, real model tool behavior and mainland network acceptance: require

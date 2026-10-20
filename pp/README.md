@@ -11,6 +11,12 @@ model selection based on task quality.
 ## Run locally
 
 Use the Bun version pinned in the root `package.json` (currently 1.4.2).
+To install it only for this checkout, without changing your system runtime:
+
+```sh
+npm install --prefix pp/.local/toolchain --no-audit --no-fund bun@1.4.2
+export PATH="$PWD/pp/.local/toolchain/node_modules/.bin:$PATH"
+```
 
 ```sh
 bun install --frozen-lockfile
@@ -97,3 +103,8 @@ bun run check
 Router tests use real local HTTP servers and fixture responses. They do not call
 a paid model provider. Successful fixture tests do not prove live provider quality
 or mainland network availability.
+
+On a memory-constrained machine, run the focused `pp:check` first and use the hosted
+PP workflow for the full repository check and browser build. Do not run type checks,
+production builds and browser automation concurrently. See [verification](VERIFICATION.md)
+for completed checks and the remaining live-deployment acceptance work.
