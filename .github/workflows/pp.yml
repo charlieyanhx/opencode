@@ -36,3 +36,12 @@ jobs:
         run: bun run --cwd packages/app build
         env:
           VITE_PP_ENABLED: "true"
+      - name: Save PP browser preview
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pp-browser
+          path: |
+            packages/app/dist/**
+            !packages/app/dist/**/*.map
+          if-no-files-found: error
+          retention-days: 7
