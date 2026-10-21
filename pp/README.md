@@ -58,9 +58,14 @@ From the repository root:
 bun run pp:dev
 ```
 
-Open `http://127.0.0.1:4444` and sign in with `OPENCODE_PASSWORD`. The launcher
-starts the backend and PP frontend, connects to the existing router, and shuts
-down its own processes when you exit. It does not replace the installed OpenCode service.
+Open the **Open PP Code** link printed by the launcher. PP provisions the browser
+session automatically; there is no server address, QR code or workspace password
+to enter. The single-use link expires after five minutes. Once opened, the backend
+sets an HttpOnly session cookie, so reloading or opening the clean app URL stays
+connected for up to 30 days (rotating the server password revokes it).
+The launcher starts the backend and PP frontend, connects to the existing router,
+and shuts down its own processes when you exit. It does not replace the installed
+OpenCode service. This local handoff is not yet PP account sign-in for a hosted service.
 
 State is kept under ignored `pp/.local/`. Optional `PP_SERVER_PORT` and
 `PP_APP_PORT` environment variables change the backend and frontend ports.

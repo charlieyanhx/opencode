@@ -4,6 +4,8 @@ This stack runs **one trusted operator's coding workspace**. OpenCode can execut
 
 The browser connects over HTTPS to Caddy. Caddy serves the built PP app and forwards `/api/*`, `/auth/*`, and `/openapi.json` to the authenticated OpenCode server without rewriting paths. The app uses its existing sign-in screen; enter the server password from `.env` (username `opencode` for API clients). Static sign-in assets are public; workspace APIs require authentication. WebSocket tickets and SSE streaming use the existing backend authentication.
 
+The PP product should provision that connection after PP account sign-in. The local launcher now demonstrates the handoff using the existing authenticated `POST /api/pair` and one-time `/auth/connect/<code>` navigation: the backend sets an HttpOnly cookie and redirects to the clean workspace URL. A hosted PP account gateway is not included in this private deployment profile. It must validate the PP session and select the operator's isolated backend before creating a link; never expose the server password in frontend build variables or make the workspace API anonymous.
+
 The backend calls the existing [PP model router](https://github.com/Principle-of-Procrastination/pp-router), a separate FastAPI/LiteLLM service. The `pp/auto` model uses its classifier and fallback routing through the OpenAI-compatible `/v1/chat/completions` endpoint. This stack contains only the web and backend containers. Provider credentials, model allowlists, route selection, and regional policy belong to the shared router; provider keys never enter this stack or the browser.
 
 ## Prepare

@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url"
 import { loadConfig } from "./router/src/config"
 import { start } from "./router/src/index"
 import { openCodeConfig, sharedRouterConfig } from "./opencode"
+import { browserLink } from "./connect"
 
 const root = fileURLToPath(new URL("../", import.meta.url))
 const mode = process.env.PP_ROUTER_MODE ?? "shared"
@@ -136,9 +137,35 @@ try {
       },
     ),
   )
-  console.log(`PP development UI: http://127.0.0.1:${appPort}`)
-  console.log("Sign in with the OPENCODE_PASSWORD from pp/.env. Local state lives in pp/.local.")
-  const code = await Promise.race(children.map((child) => child.exited))
+  const controller = new AbortController()
+  const connected = (async () => {
+    const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(90_000)])
+    const server = `http://127.0.0.1:${serverPort}`
+    const browser = `http://127.0.0.1:${appPort}`
+    for (let attempt = 0; attempt < 90; attempt++) {
+      signal.throwIfAborted()
+      const request = AbortSignal.any([signal, AbortSignal.timeout(5000)])
+      const ready = await fetch(browser, { signal: request }).then(
+        (response) => response.ok,
+        () => false,
+      )
+      if (ready) {
+        const link = await browserLink(server, browser, process.env.OPENCODE_PASSWORD!, request).catch(() => undefined)
+        if (link) {
+          console.log(`Open PP Code: ${link}`)
+          console.log(
+            "PP connects your workspace automatically. The link expires after five minutes; refresh stays signed in.",
+          )
+          return
+        }
+      }
+      await Bun.sleep(1000)
+    }
+    throw new Error("PP workspace did not become ready; check the backend output above")
+  })()
+  const exited = Promise.race(children.map((child) => child.exited))
+  await Promise.race([connected, exited.then(() => controller.abort())])
+  const code = await exited
   if (!stopping) process.exitCode = code || 1
 } finally {
   stop()

@@ -33,6 +33,21 @@ export default defineConfig({
     host: "0.0.0.0",
     allowedHosts: true,
     port: 3000,
+    ...(process.env.VITE_PP_ENABLED === "true"
+      ? {
+          proxy: Object.fromEntries(
+            ["/api", "/auth", "/openapi.json"].map((route) => [
+              route,
+              {
+                target: `http://${process.env.VITE_OPENCODE_SERVER_HOST ?? "127.0.0.1"}:${process.env.VITE_OPENCODE_SERVER_PORT ?? "4096"}`,
+                // Preserve the browser origin and port for the backend's session cookie checks.
+                changeOrigin: false,
+                ws: true,
+              },
+            ]),
+          ),
+        }
+      : {}),
   },
   build: {
     ...(process.env.VITE_OPENCODE_TEST_FIXTURES === "1"
