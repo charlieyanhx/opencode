@@ -1,4 +1,5 @@
-import { createResource } from "solid-js"
+import { createResource, Show } from "solid-js"
+import { PPWordmark } from "@/shell/pp/wordmark"
 import { useDialog } from "@opencode/ui/context/dialog"
 import { useLanguage } from "@/runtime/i18n/language"
 import { usePlatform } from "@/runtime/platform/platform"
@@ -33,6 +34,7 @@ const illustrators = ["usrnk1", "ludvigrask_", "arvsrn", "iamdavidhill"] as cons
 export function SettingsAbout(props: { active: boolean }) {
   const language = useLanguage()
   const platform = usePlatform()
+  const pp = import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"
   const dialog = useDialog()
 
   const [otherContributors] = createResource(
@@ -80,7 +82,11 @@ export function SettingsAbout(props: { active: boolean }) {
         <p>{language.t("settings.about.license")}</p>
       </div>
 
-      <AnimatedWordmark active={props.active} />
+      <Show when={pp} fallback={<AnimatedWordmark active={props.active} />}>
+        <PPWordmark />
+        <p>{language.t("pp.about.description")}</p>
+        <p class="settings-about-faint">{language.t("pp.about.upstream")}</p>
+      </Show>
 
       <div class="settings-about-credits">
         <p>{language.rich("settings.about.writtenByNames", { names: language.list(writerCredits()) })}</p>

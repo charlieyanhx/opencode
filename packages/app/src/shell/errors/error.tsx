@@ -1,6 +1,7 @@
 import { TextField } from "@opencode/ui/text-field"
 import type { captureException } from "@sentry/solid"
 import { Logo } from "@opencode/ui/logo"
+import { PPWordmark } from "@/shell/pp/wordmark"
 import { Button } from "@opencode/ui/button"
 import { Component, createSignal, onCleanup, onMount, Show } from "solid-js"
 import { createStore } from "solid-js/store"
@@ -333,7 +334,12 @@ export const ErrorPage: Component<ErrorPageProps> = (props) => {
       data-tauri-drag-region
     >
       <div class="w-full max-w-3xl flex flex-col items-center justify-center gap-6 sm:gap-8 my-auto">
-        <Logo class="w-48 sm:w-58.5 opacity-12 shrink-0" />
+        <Show
+          when={import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"}
+          fallback={<Logo class="w-48 sm:w-58.5 opacity-12 shrink-0" />}
+        >
+          <PPWordmark decorative />
+        </Show>
         <div class="flex flex-col items-center gap-2 text-center">
           <h1 class="text-lg font-medium text-text-strong">
             {language.t(status() ? "error.page.title.status" : "error.page.title")}

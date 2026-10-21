@@ -2,6 +2,7 @@ import { Component } from "solid-js"
 import { Select } from "@opencode/ui/select"
 import { TextInput } from "@opencode/ui/text-input"
 import { useLanguage } from "@/runtime/i18n/language"
+import { usePlatform } from "@/runtime/platform/platform"
 import { ExternalLink } from "@/runtime/platform/external-link"
 import { SettingsList } from "@/settings/list"
 import { SettingsRow } from "@/settings/row"
@@ -65,6 +66,8 @@ const FontSetting: Component<{
 
 export const SettingsAppearance: Component = () => {
   const language = useLanguage()
+  const platform = usePlatform()
+  const pp = import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"
   const appearance = createAppearanceSettingsController()
 
   return (
@@ -73,7 +76,9 @@ export const SettingsAppearance: Component = () => {
         <div class="settings-tab-header-row">
           <div class="flex flex-col gap-1">
             <h2 class="settings-tab-title">{language.t("settings.general.section.appearance")}</h2>
-            <span class="text-11-regular text-v2-text-text-muted">{language.t("settings.appearance.description")}</span>
+            <span class="text-11-regular text-v2-text-text-muted">
+              {language.t(pp ? "pp.settings.appearance.description" : "settings.appearance.description")}
+            </span>
           </div>
         </div>
       </div>
@@ -83,7 +88,9 @@ export const SettingsAppearance: Component = () => {
           <SettingsList>
             <SettingsRow
               title={language.t("settings.general.row.colorScheme.title")}
-              description={language.t("settings.general.row.colorScheme.description")}
+              description={language.t(
+                pp ? "pp.settings.colorScheme.description" : "settings.general.row.colorScheme.description",
+              )}
             >
               <Select
                 data-action="settings-color-scheme"
@@ -106,7 +113,7 @@ export const SettingsAppearance: Component = () => {
               title={language.t("settings.general.row.theme.title")}
               description={
                 <>
-                  {language.t("settings.general.row.theme.description")}{" "}
+                  {language.t(pp ? "pp.settings.theme.description" : "settings.general.row.theme.description")}{" "}
                   <ExternalLink class="settings-link" href="https://opencode.ai/docs/themes/">
                     {language.t("common.learnMore")}
                   </ExternalLink>

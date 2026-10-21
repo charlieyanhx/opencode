@@ -10,6 +10,7 @@ import { Textarea } from "@opencode/ui/textarea"
 import { TextInput } from "@opencode/ui/text-input"
 import { For, Show, createMemo, type Component } from "solid-js"
 import { useLanguage } from "@/runtime/i18n/language"
+import { usePlatform } from "@/runtime/platform/platform"
 import type { LocalProject } from "@/shell/state/layout"
 import { ServerConnection, serverName } from "@/runtime/server/registry"
 import { useSettingsServers } from "@/settings/servers/inventory"
@@ -30,6 +31,8 @@ export const SettingsProjectGeneral: Component<{
   onClose: () => void
 }> = (props) => {
   const language = useLanguage()
+  const platform = usePlatform()
+  const pp = import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"
   const model = createEditProjectModel(props)
   const servers = useSettingsServers()
 
@@ -68,7 +71,7 @@ export const SettingsProjectGeneral: Component<{
         <SettingsList>
           <SettingsRow
             title={language.t("project.settings.name.title")}
-            description={language.t("project.settings.name.description")}
+            description={language.t(pp ? "pp.settings.project.name.description" : "project.settings.name.description")}
           >
             <div class="project-settings-name">
               <TextInput

@@ -95,6 +95,11 @@ use PP's original classifier or fallback policy.
 remain available without that flag. The shell uses the existing theme and locale
 contexts, including the current language catalogs, RTL layout and English fallback.
 
+PP builds use the PP Code wordmark on the session, empty panel, connection,
+error and About screens, plus PP browser/PWA names and icons. Upstream contributor
+credits and license notices remain in About; provider and CLI names retain their
+functional identities.
+
 New PP copy has English source keys and Simplified Chinese translations.
 Other languages inherit English for new PP strings until their translations are
 added and reviewed. See the app's PP localization notes for the review sources.
