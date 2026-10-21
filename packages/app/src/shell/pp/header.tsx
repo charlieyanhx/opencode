@@ -34,6 +34,13 @@ export function PPSuiteHeader() {
         </For>
       </nav>
       <div class="pp-controls">
+        <button
+          type="button"
+          onClick={() => settings.open("general")}
+          aria-current={settings.active() ? "page" : undefined}
+        >
+          {language.t("sidebar.settings")}
+        </button>
         <Show
           when={servers().length > 1}
           fallback={

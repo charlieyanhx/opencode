@@ -26,3 +26,24 @@ References checked for interface language terminology and fallback conventions:
 The new aria label `PP 套件导航` should receive native-speaker product review with
 the final suite naming. No count-sensitive strings or interpolation were added.
 These source checks are not a claim of independent human linguistic review.
+
+### Demo language pass — 2026-10-21
+
+English, Simplified Chinese (`zh`) and Traditional Chinese (`zht`) now cover every
+`pp.*` source key, including home, About, language, appearance and project settings.
+The only values intentionally identical to English are the five PP product names
+and the PP abbreviation. Other locales continue to use the existing English
+fallback for PP additions; they are not claimed as fully localized PP demos.
+
+Terminology was cross-checked against the existing app dictionaries, Microsoft's
+[VS Code Traditional Chinese corpus](https://github.com/microsoft/vscode-loc/blob/main/i18n/vscode-language-pack-zh-hant/translations/main.i18n.json),
+[Firefox Traditional Chinese preferences](https://github.com/mozilla-l10n/firefox-l10n/blob/main/zh-TW/browser/browser/preferences/preferences.ftl),
+[Mozilla Simplified Chinese settings](https://support.mozilla.org/zh-CN/products/firefox/settings/languages),
+and [Apple Taiwan language settings](https://support.apple.com/zh-tw/guide/mac-help/intl163/mac).
+Traditional Chinese keeps `專案`, `工作階段`, `工作區`, `字型` and `佈景主題`
+consistent with the app's existing labels; Simplified Chinese keeps `项目`, `会话`,
+`工作区`, `字体` and `主题`. Marketing headlines and the product term `模型路由`
+remain candidates for native-speaker polish; no independent human review is claimed.
+
+The header's Settings button opens the existing internal settings surface. It does
+not navigate to an external PP site or replace the persisted language preference.
