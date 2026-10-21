@@ -1,5 +1,6 @@
-import { Show } from "solid-js"
 import { useLanguage } from "@/runtime/i18n/language"
+import logo from "../../../icons/pp/logo-authentic.png"
+import chineseLogo from "../../../icons/pp/logo-authentic-zh.png"
 import mark from "../../../icons/pp/mark.svg"
 import "./wordmark.css"
 
@@ -9,14 +10,16 @@ export function PPWordmark(props: { compact?: boolean; decorative?: boolean; cla
   return (
     <div
       class={`pp-wordmark ${props.class ?? ""}`}
+      classList={{ "pp-wordmark-compact": props.compact }}
       role="img"
       aria-label={props.decorative ? undefined : language.t("pp.code")}
       aria-hidden={props.decorative || undefined}
     >
-      <img class="pp-wordmark-icon" src={mark} alt="" />
-      <Show when={!props.compact}>
-        <span class="pp-wordmark-name">{language.t("pp.code")}</span>
-      </Show>
+      <img
+        class="pp-wordmark-icon"
+        src={props.compact ? mark : language.locale().startsWith("zh") ? chineseLogo : logo}
+        alt=""
+      />
     </div>
   )
 }

@@ -11,6 +11,7 @@ import { createHomeScrollController } from "./scroll"
 import { createHomeSessionSearchController } from "./sessions/search"
 import { createHomeSessionsController } from "./sessions/controller"
 import { HomeSessions } from "./sessions/region"
+import { PPWordmark } from "@/shell/pp/wordmark"
 import "./pp.css"
 
 export function Home() {
@@ -48,9 +49,7 @@ export function Home() {
           <section class="pp-home-intro" aria-labelledby="pp-home-title">
             <div class="pp-home-heading">
               <div class="pp-home-eyebrow">
-                <span class="pp-home-symbol" aria-hidden="true">
-                  {projects.copy.language.t("pp.mark")}
-                </span>
+                <PPWordmark compact decorative class="pp-home-symbol" />
                 <span>{projects.copy.language.t("pp.home.eyebrow")}</span>
               </div>
               <h1 id="pp-home-title">{projects.copy.language.t("pp.home.title")}</h1>

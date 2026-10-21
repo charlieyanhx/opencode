@@ -24,14 +24,8 @@
   font-weight: 650;
   letter-spacing: -0.02em;
 }
-.pp-mark {
-  display: grid;
-  place-items: center;
-  inline-size: 30px;
-  block-size: 30px;
-  border: 1px solid var(--v2-border-border-muted);
-  border-radius: 9px;
-  background: var(--v2-background-bg-layer-02);
+.pp-mark.pp-wordmark {
+  inline-size: 36px;
 }
 .pp-navigation {
   flex-wrap: wrap;

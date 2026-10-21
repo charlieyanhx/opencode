@@ -4,6 +4,7 @@ import { useLanguage } from "@/runtime/i18n/language"
 import { useSettingsSurface } from "@/settings/surface"
 import { useSettingsServers } from "@/settings/servers/inventory"
 import { suiteLink } from "./config"
+import { PPWordmark } from "./wordmark"
 import "./style.css"
 
 export function PPSuiteHeader() {
@@ -21,9 +22,7 @@ export function PPSuiteHeader() {
   return (
     <header class="pp-suite" dir={language.direction()}>
       <A class="pp-brand" href="/" aria-label={language.t("pp.code")}>
-        <span class="pp-mark" aria-hidden="true">
-          {language.t("pp.mark")}
-        </span>
+        <PPWordmark compact decorative class="pp-mark" />
         <span>{language.t("pp.code")}</span>
       </A>
       <nav class="pp-navigation" aria-label={language.t("pp.navigation")}>

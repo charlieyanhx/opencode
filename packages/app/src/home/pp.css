@@ -22,15 +22,8 @@
   letter-spacing: 0.08em;
 }
 
-.pp-home-symbol {
-  display: grid;
-  place-items: center;
-  inline-size: 28px;
-  block-size: 28px;
-  border: 1px solid var(--v2-border-border-muted);
-  border-radius: 8px;
-  background: var(--v2-background-bg-layer-02);
-  letter-spacing: -0.05em;
+.pp-home-symbol.pp-wordmark {
+  inline-size: 36px;
 }
 
 .pp-home-heading h1 {

@@ -2,24 +2,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  inline-size: 320px;
   max-inline-size: 100%;
-  color: var(--v2-text-text-base);
 }
 
 .pp-wordmark-icon {
-  flex-shrink: 0;
-  inline-size: clamp(40px, 8vw, 56px);
+  display: block;
+  inline-size: 100%;
   block-size: auto;
-  border: 1px solid var(--v2-border-border-muted);
-  border-radius: 25%;
 }
 
-.pp-wordmark-name {
-  font-family: var(--font-family-text);
-  font-size: clamp(32px, 8vw, 52px);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.055em;
-  white-space: nowrap;
+.pp-wordmark-compact {
+  inline-size: 56px;
+  flex-shrink: 0;
+}
+
+[data-color-scheme="dark"] .pp-wordmark-icon {
+  filter: invert(1);
 }

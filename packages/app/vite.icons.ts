@@ -12,9 +12,8 @@ export function icons(channel: string): Plugin {
       pp
         ? {
             "favicon.svg": "mark.svg",
-            "apple-touch-icon.png": "apple-touch-icon.png",
-            "web-app-manifest-192x192.png": "icon-192.png",
-            "web-app-manifest-512x512.png": "icon-512.png",
+            "apple-touch-icon.png": "logo-authentic.png",
+            "logo-authentic.png": "logo-authentic.png",
           }
         : {
             "favicon.ico": "icon.ico",
@@ -34,7 +33,9 @@ export function icons(channel: string): Plugin {
       source: JSON.stringify({
         ...manifest,
         ...(pp ? { name: "PP Code", short_name: "PP Code", theme_color: "#191919", background_color: "#191919" } : {}),
-        icons: manifest.icons.map((icon) => ({ ...icon, src: `/${prefix}${icon.src}` })),
+        icons: pp
+          ? [{ src: `/${prefix}/favicon.svg`, sizes: "any", type: "image/svg+xml", purpose: "any" }]
+          : manifest.icons.map((icon) => ({ ...icon, src: `/${prefix}${icon.src}` })),
       }),
       type: "application/manifest+json",
     },
@@ -61,7 +62,7 @@ export function icons(channel: string): Plugin {
           ? html
               .replace("<title>OpenCode</title>", "<title>PP Code</title>")
               .replace('rel="icon" type="image/x-icon"', 'rel="icon" type="image/svg+xml"')
-              .replaceAll('content="/social-share.png"', `content="/${prefix}/web-app-manifest-512x512.png"`)
+              .replaceAll('content="/social-share.png"', `content="/${prefix}/logo-authentic.png"`)
           : html
 
         return branded
