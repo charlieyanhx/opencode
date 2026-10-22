@@ -5,7 +5,7 @@ import { Iterable, pipe } from "effect"
 import { createEffect, createMemo, type Accessor } from "solid-js"
 import type { ProviderListResponse } from "@/runtime/server/types"
 import { useIntegrations } from "./integrations"
-import { popularProviders } from "./order"
+import { offeredProvider, popularProviders } from "./order"
 
 export { popularProviders } from "./order"
 
@@ -40,8 +40,15 @@ export function useProviders(directory: Accessor<string | undefined>) {
     const model = data.location.model.list(ref)
 
     if (!provider || !model) return emptyProviderCatalog
+    const catalog = normalizeProviderList(provider, model)
 
-    return normalizeProviderList(provider, model)
+    if (import.meta.env.VITE_PP_ENABLED !== "true") return catalog
+
+    return {
+      ...catalog,
+      all: new Map([...catalog.all].filter(([, item]) => offeredProvider(item))),
+      connected: catalog.connected.filter((id) => offeredProvider(catalog.all.get(id) ?? { id })),
+    }
   })
 
   const ready = () => {

@@ -96,16 +96,32 @@ remain available without that flag. The shell uses the existing theme and locale
 contexts, including the current language catalogs, RTL layout and English fallback.
 
 PP builds use the PP Code wordmark on the session, empty panel, connection,
-error and About screens, plus PP browser/PWA names and icons. Upstream contributor
-credits and license notices remain in About; provider and CLI names retain their
-functional identities.
+error and About screens, plus PP browser/PWA names and icons. They do not name the
+upstream product in the interface:
 
-New PP copy has English source keys and Simplified Chinese translations.
-Other languages inherit English for new PP strings until their translations are
-added and reviewed. See the app's PP localization notes for the review sources.
-This is extensible language support, not a claim that every language has complete,
-reviewed PP translations. Assistant response language and document translation
-are separate from UI localization.
+- `packages/app/src/runtime/i18n/pp.ts` replaces upstream product, hosted-service and
+  CLI names in English, Simplified and Traditional Chinese copy. The upstream
+  dictionaries stay unchanged; `pp.test.ts` fails if any PP-locale string still names
+  the upstream product. Desktop-only strings and the worktree environment-variable
+  hints are exempt.
+- The upstream hosted model services (`opencode`, `opencode-go`) and their Console
+  workspaces are removed from provider lists, and the upstream built-in skills are
+  hidden from skill lists and composer suggestions.
+- About shows PP copy only. Its Third-party notices keep the upstream MIT notice,
+  which the license requires every copy to carry.
+- Help opens `VITE_PP_HELP_URL`, or is hidden when it is unset. Upstream docs links,
+  the error-page Discord link and the upstream "What's New" changelog are hidden.
+- PP production builds publish no source maps and omit the upstream icons in `public/`.
+
+The language picker offers only English, Simplified Chinese and Traditional Chinese,
+the locales with reviewed PP copy; any other stored or browser locale reads as English.
+See the app's PP localization notes for the review sources. Assistant response
+language and document translation are separate from UI localization.
+
+Still visible to someone using developer tools: storage keys, cookie and header names,
+the theme id and DOM ids keep their upstream `opencode` prefixes, and the server keeps
+the built-in upstream skills in the agent's skill list. Renaming them changes the
+client/server contract and persisted state, so it is tracked separately.
 
 ## Router and deployment
 

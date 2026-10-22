@@ -49,6 +49,9 @@ function knownThemes() {
   return known
 }
 
+// PP builds present the default theme under the product name.
+const defaultThemeName = import.meta.env.VITE_PP_ENABLED === "true" ? "PP Code" : undefined
+
 const names: Record<string, string> = {
   "oc-2": "OpenCode",
   amoled: "AMOLED",
@@ -375,7 +378,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       colorScheme: () => store.colorScheme,
       mode: () => store.mode,
       ids,
-      name: (id: string) => store.themes[id]?.name ?? names[id] ?? id,
+      name: (id: string) => (id === "oc-2" ? defaultThemeName : undefined) ?? store.themes[id]?.name ?? names[id] ?? id,
       loadThemes,
       themes: () => store.themes,
       setTheme,

@@ -1,4 +1,5 @@
 import { ImagePreview } from "@opencode/ui/image-preview"
+import { offeredSkill } from "@/shell/pp/config"
 import { useDialog } from "@opencode/ui/context/dialog"
 import type { ReferenceInfo } from "@opencode/client/promise"
 import type { Links, MountedSession } from "@opencode/gui-extensions/sdk"
@@ -185,7 +186,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
       })),
   )
 
-  const skills = createMemo(() => data.location.skill.list({ directory: sdk().directory }) ?? [])
+  const skills = createMemo(() => (data.location.skill.list({ directory: sdk().directory }) ?? []).filter(offeredSkill))
 
   const context = createMemo<ComposerSuggestion[]>(() => [
     ...references(),

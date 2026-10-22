@@ -78,6 +78,7 @@ const frontend = {
   VITE_PP_HOME_URL: process.env.VITE_PP_HOME_URL,
   VITE_PP_CHAT_URL: process.env.VITE_PP_CHAT_URL,
   VITE_PP_FLOW_URL: process.env.VITE_PP_FLOW_URL,
+  VITE_PP_HELP_URL: process.env.VITE_PP_HELP_URL,
 }
 const router = config ? start(config) : undefined
 const children: Bun.Subprocess[] = []

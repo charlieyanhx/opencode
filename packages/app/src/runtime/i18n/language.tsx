@@ -25,6 +25,7 @@ import {
   type DesktopNativeBundle,
   type DesktopNativeLocale,
 } from "@/runtime/i18n/desktop-native"
+import { isPPLocale, PP_LOCALES, ppDictionary } from "@/runtime/i18n/pp"
 
 export type Locale = DesktopNativeLocale
 
@@ -81,7 +82,12 @@ function cookie(locale: Locale) {
   return `oc_locale=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax`
 }
 
-const LOCALES: readonly Locale[] = DESKTOP_NATIVE_LOCALES
+// PP builds offer only locales with reviewed PP copy; any other stored or detected locale reads as English.
+const PP = import.meta.env.VITE_PP_ENABLED === "true"
+
+const LOCALES: readonly Locale[] = PP ? PP_LOCALES : DESKTOP_NATIVE_LOCALES
+
+const offered = (locale: Locale): Locale => (!PP || isPPLocale(locale) ? locale : "en")
 
 const LocaleSchema = Schema.Literals(DESKTOP_NATIVE_LOCALES)
 
@@ -96,12 +102,14 @@ const StoredLocaleSchema = Schema.Struct({
 
 const INTL = DESKTOP_NATIVE_LOCALE_TAGS
 
-const base = flatten({ ...en, ...dict })
+const source = flatten({ ...en, ...dict })
+
+const base = PP ? ppDictionary("en", source) : source
 
 const dicts = new Map<Locale, Dictionary>([["en", base]])
 
 const merge = (app: Promise<Source>, ui: Promise<Source>) =>
-  Promise.all([app, ui]).then(([a, b]) => ({ ...base, ...flatten({ ...a.dict, ...b.dict }) }) as Dictionary)
+  Promise.all([app, ui]).then(([a, b]) => ({ ...source, ...flatten({ ...a.dict, ...b.dict }) }) as Dictionary)
 
 const loaders: Record<Exclude<Locale, "en">, () => Promise<Dictionary>> = {
   zh: () => merge(import("@/runtime/i18n/zh"), import("@opencode/ui/i18n/zh")),
@@ -176,7 +184,8 @@ function loadDict(locale: Locale) {
   if (locale === "en") return Promise.resolve(base)
   const load = loaders[locale]
 
-  return load().then((next: Dictionary) => {
+  return load().then((loaded: Dictionary) => {
+    const next = PP && isPPLocale(locale) ? ppDictionary(locale, loaded) : loaded
     dicts.set(locale, next)
 
     return next
@@ -190,11 +199,11 @@ export function loadLocaleDict(locale: Locale) {
 function detectLocale(): Locale {
   if (typeof navigator !== "object") return "en"
 
-  return detectDesktopNativeLocale(navigator.languages?.length ? navigator.languages : [navigator.language])
+  return offered(detectDesktopNativeLocale(navigator.languages?.length ? navigator.languages : [navigator.language]))
 }
 
 export function normalizeLocale(value: string): Locale {
-  return Option.getOrElse(Schema.decodeUnknownOption(LocaleSchema)(value), () => "en")
+  return offered(Option.getOrElse(Schema.decodeUnknownOption(LocaleSchema)(value), () => "en"))
 }
 
 export const languageSchema = Persistence.struct({
@@ -212,7 +221,7 @@ function readStoredLocale() {
 
     if (Option.isNone(next)) return
 
-    return next.value.locale
+    return offered(next.value.locale)
   } catch {
     return
   }

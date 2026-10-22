@@ -8,6 +8,7 @@ import { createStore } from "solid-js/store"
 import { Predicate } from "effect"
 import { Updater } from "@opencode/gui-extensions/updater"
 import { usePlatform } from "@/runtime/platform/platform"
+import { ppEnabled } from "@/shell/pp/config"
 import { useLanguage } from "@/runtime/i18n/language"
 import { createIpcClients } from "@/runtime/extension/ipc"
 import { Icon } from "@opencode/ui/icon"
@@ -416,14 +417,16 @@ export const ErrorPage: Component<ErrorPageProps> = (props) => {
         <div class="flex flex-col items-center gap-2 text-xs text-center">
           <div class="flex flex-wrap items-center justify-center gap-1">
             {language.t("error.page.report.prefix")}
-            <button
-              type="button"
-              class="flex items-center text-text-interactive-base gap-1"
-              onClick={() => platform.openExternal("https://opencode.ai/desktop-feedback")}
-            >
-              <div>{language.t("error.page.report.discord")}</div>
-              <Icon name="discord" class="text-text-interactive-base" />
-            </button>
+            <Show when={!ppEnabled(platform)}>
+              <button
+                type="button"
+                class="flex items-center text-text-interactive-base gap-1"
+                onClick={() => platform.openExternal("https://opencode.ai/desktop-feedback")}
+              >
+                <div>{language.t("error.page.report.discord")}</div>
+                <Icon name="discord" class="text-text-interactive-base" />
+              </button>
+            </Show>
           </div>
           <Show when={platform.version}>
             {(version) => (

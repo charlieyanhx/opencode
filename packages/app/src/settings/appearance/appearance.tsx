@@ -1,4 +1,4 @@
-import { Component } from "solid-js"
+import { Component, Show } from "solid-js"
 import { Select } from "@opencode/ui/select"
 import { TextInput } from "@opencode/ui/text-input"
 import { useLanguage } from "@/runtime/i18n/language"
@@ -113,10 +113,13 @@ export const SettingsAppearance: Component = () => {
               title={language.t("settings.general.row.theme.title")}
               description={
                 <>
-                  {language.t(pp ? "pp.settings.theme.description" : "settings.general.row.theme.description")}{" "}
-                  <ExternalLink class="settings-link" href="https://opencode.ai/docs/themes/">
-                    {language.t("common.learnMore")}
-                  </ExternalLink>
+                  {language.t(pp ? "pp.settings.theme.description" : "settings.general.row.theme.description")}
+                  <Show when={!pp}>
+                    {" "}
+                    <ExternalLink class="settings-link" href="https://opencode.ai/docs/themes/">
+                      {language.t("common.learnMore")}
+                    </ExternalLink>
+                  </Show>
                 </>
               }
             >

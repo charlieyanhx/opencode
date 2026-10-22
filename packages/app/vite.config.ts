@@ -64,6 +64,7 @@ export default defineConfig({
       : {}),
     assetsDir: "_assets",
     target: "esnext",
-    sourcemap: true,
+    // PP builds publish no source maps, which would expose the full upstream sources.
+    sourcemap: process.env.VITE_PP_ENABLED !== "true",
   },
 })

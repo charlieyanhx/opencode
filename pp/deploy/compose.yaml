@@ -11,6 +11,7 @@ services:
         VITE_PP_HOME_URL: ${VITE_PP_HOME_URL:-}
         VITE_PP_CHAT_URL: ${VITE_PP_CHAT_URL:-}
         VITE_PP_FLOW_URL: ${VITE_PP_FLOW_URL:-}
+        VITE_PP_HELP_URL: ${VITE_PP_HELP_URL:-}
     environment:
       PP_DOMAIN: ${PP_DOMAIN:?Set PP_DOMAIN to the hostname you control}
     ports:

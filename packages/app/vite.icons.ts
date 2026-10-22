@@ -1,6 +1,22 @@
-import { readFileSync } from "node:fs"
+import { readFileSync, rmSync } from "node:fs"
+import { join } from "node:path"
 import type { Plugin } from "vite"
 import manifest from "./manifest.json" with { type: "json" }
+
+const upstreamPublicFiles = [
+  "apple-touch-icon.png",
+  "apple-touch-icon-v3.png",
+  "favicon.ico",
+  "favicon.svg",
+  "favicon-v3.ico",
+  "favicon-v3.svg",
+  "favicon-96x96.png",
+  "favicon-96x96-v3.png",
+  "social-share.png",
+  "social-share-zen.png",
+  "web-app-manifest-192x192.png",
+  "web-app-manifest-512x512.png",
+]
 
 export function icons(channel: string): Plugin {
   const pp = process.env.VITE_PP_ENABLED === "true"
@@ -46,9 +62,20 @@ export function icons(channel: string): Plugin {
     generateBundle() {
       files.forEach((file) => this.emitFile({ type: "asset", fileName: file.fileName, source: file.source }))
     },
+    // PP builds link only PP icons; drop the upstream ones copied from `public/` before the service worker precaches.
+    writeBundle(options) {
+      const dir = options.dir
+
+      if (!pp || !dir) return
+      upstreamPublicFiles.forEach((name) => rmSync(join(dir, name), { force: true }))
+    },
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
-        const file = files.find((file) => `/${file.fileName}` === request.url?.split("?")[0])
+        // Module imports such as `logo.png?import` must reach Vite's asset pipeline, not raw bytes.
+        const [pathname, query] = request.url?.split("?") ?? []
+
+        if (query !== undefined && new URLSearchParams(query).has("import")) return next()
+        const file = files.find((file) => `/${file.fileName}` === pathname)
 
         if (!file) return next()
         response.setHeader("Content-Type", file.type)

@@ -1,7 +1,7 @@
 # PP browser shell
 
 Enabled only for the web platform with `VITE_PP_ENABLED=true`. Set optional
-`VITE_PP_HOME_URL`, `VITE_PP_CHAT_URL`, and `VITE_PP_FLOW_URL` to absolute HTTP(S)
+`VITE_PP_HOME_URL`, `VITE_PP_CHAT_URL`, `VITE_PP_FLOW_URL` and `VITE_PP_HELP_URL` to absolute HTTP(S)
 destinations. Missing, credential-bearing and non-web URLs are omitted.
 
 The shell reuses OpenCode's semantic theme tokens, settings surface and persisted
@@ -47,3 +47,13 @@ remain candidates for native-speaker polish; no independent human review is clai
 
 The header's Settings button opens the existing internal settings surface. It does
 not navigate to an external PP site or replace the persisted language preference.
+
+### White-label copy pass — 2026-10-22
+
+`runtime/i18n/pp.ts` replaces upstream product, hosted-service and CLI names in en, zh
+and zht. Chinese values reuse the existing corpus terms: `提供商`/`提供者` for provider,
+`服务器`/`伺服器`, `配对`/`配對`, `工作区`/`工作區` and `工作树`/`工作樹`. The PP About
+lines that misread "MIT License" as `麻省理工学院许可证` and the typesetting credit were
+corrected. `托管模型`/`託管模型` (hosted models) and `PP Code 管理员`/`管理員`
+(administrator) are new terms and need native-speaker review. No independent human
+review is claimed.

@@ -1,6 +1,7 @@
 import { createEffect, createMemo, createResource, Match, Show, Switch, untrack } from "solid-js"
 import { createStore, unwrap } from "solid-js/store"
 import { Dynamic, Portal } from "solid-js/web"
+import { helpLink } from "@/shell/pp/config"
 import { useLocation, useNavigate } from "@solidjs/router"
 import { IconButton } from "@opencode/ui/icon-button"
 import { Icon } from "@opencode/ui/icon"
@@ -659,18 +660,22 @@ export function Titlebar(props: { verticalTabs?: { mount?: HTMLElement } }) {
                                 <Icon name="settings-gear" size="small" />
                                 {language.t("sidebar.settings")}
                               </button>
-                              <button
-                                type="button"
-                                data-action="mobile-tabs-help"
-                                class="flex h-7 shrink-0 items-center gap-2 rounded-[6px] px-2 text-[13px] leading-4 text-v2-text-text-faint hover:bg-v2-background-bg-layer-02 focus-visible:outline-none focus-visible:bg-v2-background-bg-layer-02"
-                                onClick={() => {
-                                  setMobileTabs("open", false)
-                                  platform.openExternal("https://opencode.ai/desktop-feedback")
-                                }}
-                              >
-                                <Icon name="help" size="small" />
-                                {language.t("sidebar.help")}
-                              </button>
+                              <Show when={helpLink(platform)}>
+                                {(href) => (
+                                  <button
+                                    type="button"
+                                    data-action="mobile-tabs-help"
+                                    class="flex h-7 shrink-0 items-center gap-2 rounded-[6px] px-2 text-[13px] leading-4 text-v2-text-text-faint hover:bg-v2-background-bg-layer-02 focus-visible:outline-none focus-visible:bg-v2-background-bg-layer-02"
+                                    onClick={() => {
+                                      setMobileTabs("open", false)
+                                      platform.openExternal(href())
+                                    }}
+                                  >
+                                    <Icon name="help" size="small" />
+                                    {language.t("sidebar.help")}
+                                  </button>
+                                )}
+                              </Show>
                             </div>
                           </div>
                         </div>

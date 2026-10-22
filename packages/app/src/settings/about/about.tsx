@@ -38,7 +38,8 @@ export function SettingsAbout(props: { active: boolean }) {
   const dialog = useDialog()
 
   const [otherContributors] = createResource(
-    () => props.active || undefined,
+    // PP builds show no upstream credits, so they never ask GitHub for the contributor count.
+    () => (props.active && !pp) || undefined,
     () => loadOtherContributorCount(platform.fetch ?? fetch),
     { initialValue: FALLBACK_OTHER_CONTRIBUTORS },
   )
@@ -71,6 +72,12 @@ export function SettingsAbout(props: { active: boolean }) {
     void dialog.show(() => <loaded.default />)
   }
 
+  const notices = () => (
+    <button type="button" class="settings-about-link" onClick={() => void showNotices()}>
+      {language.t("settings.about.notices.title")}
+    </button>
+  )
+
   return (
     <div class="settings-about-content">
       <div class="settings-about-intro">
@@ -82,49 +89,50 @@ export function SettingsAbout(props: { active: boolean }) {
         <p>{language.t("settings.about.license")}</p>
       </div>
 
-      <Show when={pp} fallback={<AnimatedWordmark active={props.active} />}>
+      <Show
+        when={pp}
+        fallback={
+          <>
+            <AnimatedWordmark active={props.active} />
+            <div class="settings-about-credits">
+              <p>{language.rich("settings.about.writtenByNames", { names: language.list(writerCredits()) })}</p>
+              <p>
+                {language.rich("settings.about.illustratedByNames", {
+                  names: language.list(illustrators.map(credit)),
+                })}
+              </p>
+            </div>
+            <div class="settings-about-publication">
+              <p>{language.t("settings.about.firstPublished")}</p>
+              <p>{language.t("settings.about.firstIllustrated")}</p>
+            </div>
+            <p class="settings-about-faint">
+              <ExternalLink href="https://opencode.ai">
+                <bdi dir="ltr">{language.t("settings.about.website")}</bdi>
+              </ExternalLink>
+            </p>
+            <div class="settings-about-details">
+              <p>{language.t("settings.about.description")}</p>
+              <p>{language.t("settings.about.trademark")}</p>
+              <p>{language.t("settings.about.typeset")}</p>
+              <p>{notices()}</p>
+            </div>
+            <p>{language.t("settings.about.tagline")}</p>
+            <img class="settings-about-legal" src={legal} alt="" />
+            <div class="settings-about-copyright">
+              <p>{language.t("settings.about.copyright")}</p>
+              <img class="settings-about-anomaly-brush" src={anomalyBrush} alt="" />
+            </div>
+          </>
+        }
+      >
         <PPWordmark />
         <p>{language.t("pp.about.description")}</p>
-        <p class="settings-about-faint">{language.t("pp.about.upstream")}</p>
+        <div class="settings-about-details">
+          <p>{language.t("settings.about.typeset")}</p>
+          <p>{notices()}</p>
+        </div>
       </Show>
-
-      <div class="settings-about-credits">
-        <p>{language.rich("settings.about.writtenByNames", { names: language.list(writerCredits()) })}</p>
-        <p>
-          {language.rich("settings.about.illustratedByNames", {
-            names: language.list(illustrators.map(credit)),
-          })}
-        </p>
-      </div>
-
-      <div class="settings-about-publication">
-        <p>{language.t("settings.about.firstPublished")}</p>
-        <p>{language.t("settings.about.firstIllustrated")}</p>
-      </div>
-
-      <p class="settings-about-faint">
-        <ExternalLink href="https://opencode.ai">
-          <bdi dir="ltr">{language.t("settings.about.website")}</bdi>
-        </ExternalLink>
-      </p>
-
-      <div class="settings-about-details">
-        <p>{language.t("settings.about.description")}</p>
-        <p>{language.t("settings.about.trademark")}</p>
-        <p>{language.t("settings.about.typeset")}</p>
-        <p>
-          <button type="button" class="settings-about-link" onClick={() => void showNotices()}>
-            {language.t("settings.about.notices.title")}
-          </button>
-        </p>
-      </div>
-
-      <p>{language.t("settings.about.tagline")}</p>
-      <img class="settings-about-legal" src={legal} alt="" />
-      <div class="settings-about-copyright">
-        <p>{language.t("settings.about.copyright")}</p>
-        <img class="settings-about-anomaly-brush" src={anomalyBrush} alt="" />
-      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Component, For, createEffect, createMemo, createResource } from "solid-js"
+import { Component, For, Show, createEffect, createMemo, createResource } from "solid-js"
 import { Icon } from "@opencode/ui/icon"
 import { Switch } from "@opencode/ui/switch"
 import { Tabs } from "@opencode/ui/tabs"
@@ -8,6 +8,8 @@ import { useServerSDK } from "@/runtime/server/client"
 import { useMcpToggle } from "@/providers/connect/mcp"
 import { pluginLabels } from "@/providers/catalog/plugin"
 import { ExternalLink } from "@/runtime/platform/external-link"
+import { usePlatform } from "@/runtime/platform/platform"
+import { offeredSkill, ppEnabled } from "@/shell/pp/config"
 import { SettingsList } from "@/settings/list"
 import type { SettingsView } from "@/settings/surface"
 import "@/settings/settings.css"
@@ -26,6 +28,7 @@ export const SettingsExtensions: Component<{
   onSubtab: (value: SettingsView["subtab"]) => void
 }> = (props) => {
   const language = useLanguage()
+  const pp = ppEnabled(usePlatform())
   const serverSdk = useServerSDK()
   const data = useData()
 
@@ -70,7 +73,7 @@ export const SettingsExtensions: Component<{
     if (serverSdk.connection.status() !== "connected") return
     void data.location.skill.sync().catch(() => undefined)
   })
-  const skills = () => data.location.skill.list() ?? []
+  const skills = () => (data.location.skill.list() ?? []).filter(offeredSkill)
 
   return (
     <>
@@ -157,9 +160,11 @@ export const SettingsExtensions: Component<{
                 <span class="settings-extension-heading text-13-medium">
                   {language.t("settings.extensions.availableAll")}
                 </span>
-                <ExternalLink class="settings-extension-link text-13-regular" href="https://opencode.ai/docs/skills/">
-                  {language.t("settings.extensions.addSkills")}
-                </ExternalLink>
+                <Show when={!pp}>
+                  <ExternalLink class="settings-extension-link text-13-regular" href="https://opencode.ai/docs/skills/">
+                    {language.t("settings.extensions.addSkills")}
+                  </ExternalLink>
+                </Show>
               </div>
               <SettingsList variant="catalog">
                 <For each={skills()}>
