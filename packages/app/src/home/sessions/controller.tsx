@@ -186,7 +186,7 @@ export function createHomeSessionsController(home: HomeController) {
     if (!conn || !ctx) return false
     const next = title.trim()
 
-    if (!next || next === sessionLabel(session)) return true
+    if (!next || next === sessionLabel(session, language.t)) return true
 
     return ctx.sdk.api.session
       .update({ sessionID: session.id, title: next })
@@ -270,7 +270,7 @@ export function createHomeSessionsController(home: HomeController) {
   }
 
   function DeleteDialog(props: { server: ServerConnection.Key; session: SessionInfo }) {
-    const name = () => sessionTitle(props.session.title) ?? language.t("command.session.new")
+    const name = () => sessionTitle(props.session.title, language.t) ?? language.t("session.title.new")
 
     const confirm = async () => {
       await remove(props.server, props.session)

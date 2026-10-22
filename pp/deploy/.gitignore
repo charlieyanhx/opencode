@@ -1,0 +1,6 @@
+.env*
+!.env.example
+certs/
+router.cn.json
+router.global.json
+opencode.json

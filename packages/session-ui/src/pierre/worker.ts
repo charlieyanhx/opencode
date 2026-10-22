@@ -1,6 +1,7 @@
 import { WorkerPoolManager } from "@pierre/diffs/worker"
 import ShikiWorkerUrl from "@pierre/diffs/worker/worker.js?worker&url"
 import { registerOpenCodeTheme } from "@opencode/ui/context/marked-theme-register"
+import { SHIKI_THEME } from "@opencode/ui/context/marked-theme"
 
 registerOpenCodeTheme()
 
@@ -20,7 +21,7 @@ function createPool(lineDiffType: "none" | "word-line") {
       poolSize: 2,
     },
     {
-      theme: "OpenCode",
+      theme: SHIKI_THEME,
       lineDiffType,
       // Pierre renders with the pool's options, not the viewer's, whenever the pool works. The "none" pool only
       // serves diffs above the large-file threshold, so it carries the plain-text fallback the viewer requests.

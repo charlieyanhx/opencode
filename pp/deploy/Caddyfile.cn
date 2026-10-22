@@ -1,0 +1,4 @@
+{$PP_DOMAIN} {
+	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+	import /etc/caddy/site.caddy
+}

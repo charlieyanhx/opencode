@@ -1,3 +1,7 @@
+[data-component="new-session"] .pp-wordmark {
+  opacity: 0.16;
+}
+
 [data-component="new-session-wordmark"] {
   --icon-strong-base: var(--icon-base);
   --wordmark-shimmer-opacity: 0.45;

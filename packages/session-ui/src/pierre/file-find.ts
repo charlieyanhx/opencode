@@ -2,6 +2,7 @@ import { createEffect, createSignal, onCleanup, onMount } from "solid-js"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 import { createStore } from "solid-js/store"
+import { BRAND } from "@opencode/ui/brand"
 
 export type FindHost = {
   element: () => HTMLElement | undefined
@@ -97,8 +98,8 @@ function clearHighlightFind() {
   const api = (globalThis as { CSS?: { highlights?: { delete: (name: string) => void } } }).CSS?.highlights
 
   if (!api) return
-  api.delete("opencode-find")
-  api.delete("opencode-find-current")
+  api.delete(`${BRAND}-find`)
+  api.delete(`${BRAND}-find-current`)
 }
 
 function supportsHighlights() {
@@ -347,16 +348,16 @@ export function createFileFind(opts: CreateFileFindOptions) {
 
     if (!api || typeof Highlight !== "function") return false
 
-    api.delete("opencode-find")
-    api.delete("opencode-find-current")
+    api.delete(`${BRAND}-find`)
+    api.delete(`${BRAND}-find-current`)
 
     const active = ranges[currentIndex]
 
-    if (active) api.set("opencode-find-current", new Highlight(active))
+    if (active) api.set(`${BRAND}-find-current`, new Highlight(active))
 
     const rest = ranges.filter((_, i) => i !== currentIndex)
 
-    if (rest.length > 0) api.set("opencode-find", new Highlight(...rest))
+    if (rest.length > 0) api.set(`${BRAND}-find`, new Highlight(...rest))
 
     return true
   }

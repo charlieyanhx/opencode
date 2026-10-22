@@ -62,7 +62,7 @@ export function authorizedRequest(request: HttpServerRequest.HttpServerRequest, 
 }
 
 function authorizedSessionCookie(request: HttpServerRequest.HttpServerRequest, config: ServerAuth.Info) {
-  const token = request.cookies[ServerAuth.sessionCookieName(request.headers.host)]
+  const token = ServerAuth.sessionToken(request.cookies, request.headers.host, config)
   if (!token) return false
   // Same-site pages on other ports still send this cookie, so only same-origin requests may use it.
   const origin = request.headers.origin

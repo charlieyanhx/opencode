@@ -45,7 +45,7 @@ export function createHomeSessionSearchController(home: HomeController, sessions
 
     const records = sessions.data
       .searchRecords()
-      .filter((record) => `${sessionLabel(record.session)} ${record.projectName}`.toLowerCase().includes(value))
+      .filter((record) => `${sessionLabel(record.session, language.t)} ${record.projectName}`.toLowerCase().includes(value))
 
     if (!state.exact || records.some((record) => record.session.id === state.exact?.session.id)) return records
 

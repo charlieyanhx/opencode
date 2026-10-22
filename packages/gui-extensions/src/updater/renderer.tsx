@@ -5,7 +5,8 @@ import { updaterAction } from "./action"
 import type definition from "./index"
 
 const setup: Setup<typeof definition> = (ctx) => {
-  whatsNew(ctx)
+  // PP builds ship their own release notes; the upstream changelog describes a different product.
+  if (import.meta.env.VITE_PP_ENABLED !== "true") whatsNew(ctx)
 
   if (!ctx.desktop) return
   const updater = ctx.uses.updater

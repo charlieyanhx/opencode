@@ -1,9 +1,11 @@
 import { OpenCode, type OpenCodeClient } from "@opencode/client/promise"
 import type { ServerConnection } from "@/runtime/server/registry"
 import { decode64 } from "@/runtime/persistence/base64"
+import { BRAND } from "@opencode/ui/brand"
 
+// PP builds sign in as `pp`, which PP-branded servers accept (`OPENCODE_SERVER_BRAND=pp`); stock servers accept only `opencode`.
 export function authTokenFromCredentials(input: { password: string }) {
-  return btoa(`opencode:${input.password}`)
+  return btoa(`${BRAND}:${input.password}`)
 }
 
 export function authFromToken(token: string | null) {

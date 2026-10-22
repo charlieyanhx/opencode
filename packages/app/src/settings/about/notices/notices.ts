@@ -1,6 +1,7 @@
 import apache from "./apache-2.0.txt?raw"
 import betterOfficeNotice from "./betteroffice-notice.txt?raw"
 import { crates, crateTexts } from "./crates"
+import upstreamLicense from "../../../../../../LICENSE?raw"
 
 /**
  * Third-party software that ships inside the app, with the attribution its license asks redistributions to carry.
@@ -26,6 +27,17 @@ export const notices = [
     text: apache,
   },
 ]
+
+/** PP builds redistribute the upstream app, and its MIT license asks every copy to carry this notice. */
+export const upstreamNotice = {
+  name: "opencode",
+  detail: undefined,
+  detailKey: undefined,
+  url: "https://github.com/anomalyco/opencode",
+  license: "MIT License",
+  notice: undefined,
+  text: upstreamLicense,
+}
 
 /**
  * The Rust crates the BetterOffice wasm engines compile in, generated from the published Cargo.lock and crate

@@ -34,6 +34,7 @@
   ],
   "exports": {
     "./package.json": "./package.json",
+    "./brand": "./src/brand.ts",
     "./accordion": "./src/data-display/accordion/accordion.tsx",
     "./avatar": "./src/data-display/avatar/avatar.tsx",
     "./badge": "./src/data-display/badge/badge.tsx",

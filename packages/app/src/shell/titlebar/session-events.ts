@@ -1,6 +1,7 @@
 import { ServerConnection } from "@/runtime/server/registry"
+import { BRAND } from "@opencode/ui/brand"
 
-export const SESSION_TABS_REMOVED_EVENT = "opencode:session-tabs-removed"
+export const SESSION_TABS_REMOVED_EVENT = `${BRAND}:session-tabs-removed`
 
 export type SessionTabsRemovedDetail = {
   server: ServerConnection.Key

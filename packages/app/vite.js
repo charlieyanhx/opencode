@@ -6,7 +6,16 @@ import { fileURLToPath } from "url"
 
 const theme = fileURLToPath(new URL("./public/oc-theme-preload.js", import.meta.url))
 
-const themeScript = readFileSync(theme, "utf8")
+const pp = process.env.VITE_PP_ENABLED === "true"
+
+// PP builds give the inline preload script the PP names that @opencode/ui/theme uses at runtime.
+const themeScript = pp
+  ? readFileSync(theme, "utf8")
+      .replaceAll('"opencode-theme-', '"pp-theme-')
+      .replace('"opencode-color-scheme"', '"pp-color-scheme"')
+      .replace('style.id = "oc-theme-preload"', 'style.id = "pp-theme-preload"')
+      .replace("dataset.theme = themeId", 'dataset.theme = themeId === "oc-2" ? "pp" : themeId')
+  : readFileSync(theme, "utf8")
 
 const tailwind = tailwindcss()
 
@@ -128,6 +137,6 @@ export default [
 export function inlineThemePreload(html) {
   return html.replace(
     /<script id="oc-theme-preload-script" src="(?:\.\/|\/)oc-theme-preload\.js"><\/script>/,
-    `<script id="oc-theme-preload-script">${themeScript}</script>`,
+    `<script id="${pp ? "pp" : "oc"}-theme-preload-script">${themeScript}</script>`,
   )
 }

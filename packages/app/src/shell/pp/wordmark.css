@@ -1,0 +1,22 @@
+.pp-wordmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 320px;
+  max-inline-size: 100%;
+}
+
+.pp-wordmark-icon {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+.pp-wordmark-compact {
+  inline-size: 56px;
+  flex-shrink: 0;
+}
+
+[data-color-scheme="dark"] .pp-wordmark-icon {
+  filter: invert(1);
+}

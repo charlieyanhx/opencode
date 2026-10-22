@@ -309,7 +309,10 @@ const webSearchProviderNames = new Map([
 ])
 
 function webSearchProviderLabel(provider: string | undefined, i18n: ReturnType<typeof useI18n>) {
-  if (!provider) return i18n.t("ui.tool.websearch")
+  // PP builds name no upstream service, so the bundled search reads as the generic tool label.
+  if (!provider || (provider === "opencode" && import.meta.env.VITE_PP_ENABLED === "true")) {
+    return i18n.t("ui.tool.websearch")
+  }
   const name = webSearchProviderNames.get(provider) ?? `${provider[0].toUpperCase()}${provider.slice(1)}`
 
   return i18n.t("ui.tool.websearch.provider", { provider: name })

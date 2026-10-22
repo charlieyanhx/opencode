@@ -1,0 +1,61 @@
+name: PP integration
+
+on:
+  push:
+    branches: [pp-suite]
+  pull_request:
+    paths:
+      - "pp/**"
+      - "packages/app/**"
+      - "packages/ui/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/pp.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: ./.github/actions/setup-bun
+      - name: Run repository and PP checks
+        run: bun run check
+      - name: Test suite navigation configuration
+        working-directory: packages/app
+        run: bun test --conditions=solid --isolate --preload ./happydom.ts ./src/shell/pp/config.test.ts
+      - name: Build PP browser app
+        run: bun run --cwd packages/app build
+        env:
+          VITE_PP_ENABLED: "true"
+      - name: Save PP browser preview
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pp-browser
+          path: |
+            packages/app/dist/**
+            !packages/app/dist/**/*.map
+          if-no-files-found: error
+          retention-days: 7
+
+  images:
+    # Builds the deployment images the hosting engineer will run; nothing is pushed to a registry.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - name: Build backend image
+        run: docker build --file pp/deploy/Dockerfile --target backend --tag pp-code-backend:ci .
+      - name: Build web image
+        run: docker build --file pp/deploy/Dockerfile --target web --tag pp-code-web:ci .
+      - name: Check the web image serves the PP build
+        run: |
+          docker run --rm --entrypoint sh pp-code-web:ci -c 'grep -q "<title>PP Code</title>" /srv/index.html && ! grep -qi opencode /srv/index.html && ! find /srv -name "*.map" | grep -q .'

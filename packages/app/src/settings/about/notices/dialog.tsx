@@ -4,7 +4,8 @@ import { ScrollView } from "@opencode/ui/scroll-view"
 import { useLanguage } from "@/runtime/i18n/language"
 import { ExternalLink } from "@/runtime/platform/external-link"
 import { fonts } from "./fonts"
-import { crateNotices, notices } from "./notices"
+import { usePlatform } from "@/runtime/platform/platform"
+import { crateNotices, notices, upstreamNotice } from "./notices"
 
 const licenseOf = new Map(crateNotices.texts.map((text) => [text.id, text.license]))
 
@@ -16,6 +17,9 @@ const texts = crateNotices.texts.map((text) => ({
 
 export default function DialogThirdPartyNotices() {
   const language = useLanguage()
+  const platform = usePlatform()
+  const entries =
+    import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web" ? [upstreamNotice, ...notices] : notices
 
   return (
     <Dialog size="large">
@@ -28,7 +32,7 @@ export default function DialogThirdPartyNotices() {
       <DialogBody>
         <ScrollView class="settings-notices-scroll">
           <div class="settings-notices">
-            <For each={notices}>
+            <For each={entries}>
               {(entry) => (
                 <section class="settings-notice">
                   <div class="settings-notice-heading">

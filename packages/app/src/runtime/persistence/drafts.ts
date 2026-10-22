@@ -1,5 +1,6 @@
 import type { AsyncStorage } from "@solid-primitives/storage"
 import { Option, Schema } from "effect"
+import { BRAND } from "@opencode/ui/brand"
 
 export type BlobReference = { id: string; url: string }
 
@@ -440,7 +441,7 @@ function split(text: string) {
 }
 
 export function createBrowserDraftStore(): DraftStore {
-  const request = indexedDB.open("opencode-drafts", 1)
+  const request = indexedDB.open(`${BRAND}-drafts`, 1)
   request.addEventListener("upgradeneeded", () => {
     request.result.createObjectStore("documents")
     request.result.createObjectStore("blobs")

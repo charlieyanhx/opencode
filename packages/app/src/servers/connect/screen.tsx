@@ -6,6 +6,7 @@ import { TextInput } from "@opencode/ui/text-input"
 import { Wordmark } from "@opencode/ui/wordmark"
 import { useLanguage } from "@/runtime/i18n/language"
 import { usePlatform } from "@/runtime/platform/platform"
+import { PPWordmark } from "@/shell/pp/wordmark"
 import { useCheckServerHealth } from "@/runtime/server/health"
 import { ServerConnection, useServers } from "@/runtime/server/registry"
 import { bareServerAddress, serverAddress, type Pairing } from "./pairing"
@@ -20,6 +21,7 @@ const PairingScanner = lazy(() => import("./scanner").then((module) => ({ defaul
 export function ConnectServerScreen(props: { url?: string } = {}) {
   const language = useLanguage()
   const platform = usePlatform()
+  const pp = import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"
   const servers = useServers()
   const check = useCheckServerHealth()
   const redeem = useRedeemPairing()
@@ -114,8 +116,10 @@ export function ConnectServerScreen(props: { url?: string } = {}) {
   return (
     <main data-component="connect-server" aria-labelledby="server-connect-title">
       <div class="server-connect-content">
-        <div class="server-connect-brand" role="img" aria-label="OpenCode">
-          <Wordmark />
+        <div class="server-connect-brand" role="img" aria-label={pp ? language.t("pp.code") : "OpenCode"}>
+          <Show when={pp} fallback={<Wordmark />}>
+            <PPWordmark decorative />
+          </Show>
         </div>
         <header>
           <h1 id="server-connect-title">{language.t("server.connect.title")}</h1>
@@ -246,7 +250,10 @@ export function ConnectServerScreen(props: { url?: string } = {}) {
           <Show when={state.method === "link"}>
             <footer>
               <p>{language.t("server.connect.pair.link")}</p>
-              <code dir="ltr">opencode pair</code>
+              {/* PP users get pairing links from their administrator, not from a CLI. */}
+              <Show when={!pp}>
+                <code dir="ltr">opencode pair</code>
+              </Show>
             </footer>
           </Show>
         </Show>

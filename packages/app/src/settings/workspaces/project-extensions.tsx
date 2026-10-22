@@ -21,6 +21,8 @@ import { useServerSDK } from "@/runtime/server/client"
 import { useData } from "@/runtime/server/current"
 import { pluginLabels } from "@/providers/catalog/plugin"
 import { ExternalLink } from "@/runtime/platform/external-link"
+import { usePlatform } from "@/runtime/platform/platform"
+import { offeredSkill, ppEnabled } from "@/shell/pp/config"
 import { ProjectFolderMissing } from "./project-folder-missing"
 import { configuredLanguageServers } from "./project-lsp"
 import { SettingsList } from "@/settings/list"
@@ -216,6 +218,7 @@ export const ProjectSettingsExtensions: Component<{
   onSubtab: (value: "mcps" | "plugins" | "skills" | "lsps") => void
 }> = (props) => {
   const language = useLanguage()
+  const pp = ppEnabled(usePlatform())
   const serverSDK = useServerSDK()
   const directorySDK = useWorkspaceLocation()
   const data = useData()
@@ -279,13 +282,13 @@ export const ProjectSettingsExtensions: Component<{
     return pluginLabels(projectPluginList.latest ?? []).filter((name) => !shared.has(name))
   })
 
-  const serverSkills = createMemo(() => data.location.skill.list() ?? [])
+  const serverSkills = createMemo(() => (data.location.skill.list() ?? []).filter(offeredSkill))
 
   const projectSkills = createMemo(() => {
     const shared = new Set(serverSkills().map(skillKey))
 
     return (data.location.skill.list({ directory: directorySDK().directory }) ?? []).filter(
-      (item) => !shared.has(skillKey(item)),
+      (item) => offeredSkill(item) && !shared.has(skillKey(item)),
     )
   })
 
@@ -379,9 +382,11 @@ export const ProjectSettingsExtensions: Component<{
                 kind="skills"
                 empty={projectSkills().length === 0}
                 action={
-                  <ExternalLink class="settings-extension-link" href="https://opencode.ai/docs/skills/">
-                    {language.t("settings.extensions.addSkills")}
-                  </ExternalLink>
+                  <Show when={!pp}>
+                    <ExternalLink class="settings-extension-link" href="https://opencode.ai/docs/skills/">
+                      {language.t("settings.extensions.addSkills")}
+                    </ExternalLink>
+                  </Show>
                 }
               />
               <Show when={projectSkills().length > 0}>

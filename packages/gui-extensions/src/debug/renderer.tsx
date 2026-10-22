@@ -33,7 +33,8 @@ const setup: Setup<typeof Debug> = (ctx) => {
     ),
   })
 
-  if (channel !== "dev" && channel !== "local") return
+  // PP builds ship without a release channel, so keep developer tools out of their titlebar.
+  if ((channel !== "dev" && channel !== "local") || import.meta.env.VITE_PP_ENABLED === "true") return
   ctx.add(
     TitlebarItem,
     (): TitlebarItem => ({

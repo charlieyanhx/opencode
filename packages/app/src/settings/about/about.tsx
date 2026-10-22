@@ -1,4 +1,5 @@
-import { createResource } from "solid-js"
+import { createResource, Show } from "solid-js"
+import { PPWordmark } from "@/shell/pp/wordmark"
 import { useDialog } from "@opencode/ui/context/dialog"
 import { useLanguage } from "@/runtime/i18n/language"
 import { usePlatform } from "@/runtime/platform/platform"
@@ -33,10 +34,12 @@ const illustrators = ["usrnk1", "ludvigrask_", "arvsrn", "iamdavidhill"] as cons
 export function SettingsAbout(props: { active: boolean }) {
   const language = useLanguage()
   const platform = usePlatform()
+  const pp = import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"
   const dialog = useDialog()
 
   const [otherContributors] = createResource(
-    () => props.active || undefined,
+    // PP builds show no upstream credits, so they never ask GitHub for the contributor count.
+    () => (props.active && !pp) || undefined,
     () => loadOtherContributorCount(platform.fetch ?? fetch),
     { initialValue: FALLBACK_OTHER_CONTRIBUTORS },
   )
@@ -69,6 +72,12 @@ export function SettingsAbout(props: { active: boolean }) {
     void dialog.show(() => <loaded.default />)
   }
 
+  const notices = () => (
+    <button type="button" class="settings-about-link" onClick={() => void showNotices()}>
+      {language.t("settings.about.notices.title")}
+    </button>
+  )
+
   return (
     <div class="settings-about-content">
       <div class="settings-about-intro">
@@ -80,45 +89,50 @@ export function SettingsAbout(props: { active: boolean }) {
         <p>{language.t("settings.about.license")}</p>
       </div>
 
-      <AnimatedWordmark active={props.active} />
-
-      <div class="settings-about-credits">
-        <p>{language.rich("settings.about.writtenByNames", { names: language.list(writerCredits()) })}</p>
-        <p>
-          {language.rich("settings.about.illustratedByNames", {
-            names: language.list(illustrators.map(credit)),
-          })}
-        </p>
-      </div>
-
-      <div class="settings-about-publication">
-        <p>{language.t("settings.about.firstPublished")}</p>
-        <p>{language.t("settings.about.firstIllustrated")}</p>
-      </div>
-
-      <p class="settings-about-faint">
-        <ExternalLink href="https://opencode.ai">
-          <bdi dir="ltr">{language.t("settings.about.website")}</bdi>
-        </ExternalLink>
-      </p>
-
-      <div class="settings-about-details">
-        <p>{language.t("settings.about.description")}</p>
-        <p>{language.t("settings.about.trademark")}</p>
-        <p>{language.t("settings.about.typeset")}</p>
-        <p>
-          <button type="button" class="settings-about-link" onClick={() => void showNotices()}>
-            {language.t("settings.about.notices.title")}
-          </button>
-        </p>
-      </div>
-
-      <p>{language.t("settings.about.tagline")}</p>
-      <img class="settings-about-legal" src={legal} alt="" />
-      <div class="settings-about-copyright">
-        <p>{language.t("settings.about.copyright")}</p>
-        <img class="settings-about-anomaly-brush" src={anomalyBrush} alt="" />
-      </div>
+      <Show
+        when={pp}
+        fallback={
+          <>
+            <AnimatedWordmark active={props.active} />
+            <div class="settings-about-credits">
+              <p>{language.rich("settings.about.writtenByNames", { names: language.list(writerCredits()) })}</p>
+              <p>
+                {language.rich("settings.about.illustratedByNames", {
+                  names: language.list(illustrators.map(credit)),
+                })}
+              </p>
+            </div>
+            <div class="settings-about-publication">
+              <p>{language.t("settings.about.firstPublished")}</p>
+              <p>{language.t("settings.about.firstIllustrated")}</p>
+            </div>
+            <p class="settings-about-faint">
+              <ExternalLink href="https://opencode.ai">
+                <bdi dir="ltr">{language.t("settings.about.website")}</bdi>
+              </ExternalLink>
+            </p>
+            <div class="settings-about-details">
+              <p>{language.t("settings.about.description")}</p>
+              <p>{language.t("settings.about.trademark")}</p>
+              <p>{language.t("settings.about.typeset")}</p>
+              <p>{notices()}</p>
+            </div>
+            <p>{language.t("settings.about.tagline")}</p>
+            <img class="settings-about-legal" src={legal} alt="" />
+            <div class="settings-about-copyright">
+              <p>{language.t("settings.about.copyright")}</p>
+              <img class="settings-about-anomaly-brush" src={anomalyBrush} alt="" />
+            </div>
+          </>
+        }
+      >
+        <PPWordmark />
+        <p>{language.t("pp.about.description")}</p>
+        <div class="settings-about-details">
+          <p>{language.t("settings.about.typeset")}</p>
+          <p>{notices()}</p>
+        </div>
+      </Show>
     </div>
   )
 }

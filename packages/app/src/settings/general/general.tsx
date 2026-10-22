@@ -163,6 +163,8 @@ const FollowUpBehaviorSetting: Component = () => {
 
 const LanguageSetting = () => {
   const language = useLanguage()
+  const platform = usePlatform()
+  const pp = import.meta.env.VITE_PP_ENABLED === "true" && platform.platform === "web"
 
   const options = createMemo(() =>
     language.locales.map((locale) => ({
@@ -174,7 +176,7 @@ const LanguageSetting = () => {
   return (
     <SettingsRow
       title={language.t("settings.general.row.language.title")}
-      description={language.t("settings.general.row.language.description")}
+      description={language.t(pp ? "pp.settings.language.description" : "settings.general.row.language.description")}
     >
       <Select
         data-action="settings-language"

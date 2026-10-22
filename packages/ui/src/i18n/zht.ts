@@ -107,6 +107,7 @@ export const dict = {
   "ui.messagePart.title.edit": "編輯",
   "ui.messagePart.title.write": "寫入",
   "ui.messagePart.option.typeOwnAnswer": "輸入自己的答案",
+  "ui.question.custom.answerPlaceholder": "輸入自己的答案…",
   "ui.messagePart.review.title": "檢閱你的答案",
 
   "ui.list.loading": "載入中",
@@ -253,7 +254,7 @@ export const dict = {
   "ui.promptInput.dropFiles.image": "拖放要新增的圖像或文件",
   "ui.promptInput.dropFiles.pdf": "拖放要新增的 PDF 或文件",
   "ui.promptInput.dropFiles.imagePdf": "拖放要新增的圖像、PDF 或文件",
-  "ui.promptInput.exitShell": "出口",
+  "ui.promptInput.exitShell": "退出",
   "ui.sessionTimeline.notice.agentChanged": "代理變更",
 
   "ui.sessionTurn.retry.attemptWaiting.one": "嘗試 {{attempt}} - 在 {{count}} 秒內重試",
@@ -272,4 +273,14 @@ export const dict = {
   "ui.tool.browser": "瀏覽器",
   "ui.common.fileCount.one": "{{count}} 個檔案",
   "ui.common.fileCount.other": "{{count}} 個檔案",
+  // Strings newer than the upstream translation; PP builds show them, so they need Chinese too.
+  "ui.messagePart.compaction.queued": "工作階段壓縮已排入佇列",
+  "ui.message.copyFullMessage": "複製完整訊息",
+  "ui.message.moveToQueue": "移入佇列",
+  "ui.message.pending": "待傳送",
+  "ui.message.voice": "語音",
+  "ui.message.deletePending": "刪除",
+  "ui.message.modelVariant": "{{model}}（{{variant}}）",
+  "ui.sessionTimeline.notice.variantSwitched": "已切換為 {{variant}} 變體",
+  "ui.sessionTimeline.notice.variantDefault": "已切換為預設變體",
 } satisfies Partial<Record<Keys, string>>

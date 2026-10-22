@@ -230,7 +230,7 @@ export function SessionAncestorTrail(props: {
       path.unshift({
         id,
         title:
-          sessionTitle(info?.title ?? (id === props.parentID ? props.parentTitle : undefined)) ??
+          sessionTitle(info?.title ?? (id === props.parentID ? props.parentTitle : undefined), language.t) ??
           language.t("session.tab.session"),
         direct: id === props.parentID,
       })
@@ -348,6 +348,7 @@ export function SessionIdentityHeader(props: ParentProps<{ sessionID: string; se
 
     return sessionTitle(
       parent()?.title ?? (current?.type === "session" && current.sessionId === id ? info()?.title : undefined),
+      language.t,
     )
   })
 
@@ -358,7 +359,7 @@ export function SessionIdentityHeader(props: ParentProps<{ sessionID: string; se
   const title = createMemo(() =>
     pending()
       ? language.t("session.tab.session")
-      : sessionTitle(props.session?.title ?? (parentID() ? undefined : info()?.title)),
+      : sessionTitle(props.session?.title ?? (parentID() ? undefined : info()?.title), language.t),
   )
 
   const project = createMemo(() => {

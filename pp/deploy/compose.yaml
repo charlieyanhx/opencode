@@ -1,0 +1,83 @@
+name: pp-code
+
+services:
+  web:
+    image: pp-code-web:local
+    build:
+      context: ../..
+      dockerfile: pp/deploy/Dockerfile
+      target: web
+      args:
+        VITE_PP_HOME_URL: ${VITE_PP_HOME_URL:-}
+        VITE_PP_CHAT_URL: ${VITE_PP_CHAT_URL:-}
+        VITE_PP_FLOW_URL: ${VITE_PP_FLOW_URL:-}
+        VITE_PP_HELP_URL: ${VITE_PP_HELP_URL:-}
+    environment:
+      PP_DOMAIN: ${PP_DOMAIN:?Set PP_DOMAIN to the hostname you control}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - ingress
+
+  backend:
+    image: pp-code-backend:local
+    build:
+      context: ../..
+      dockerfile: pp/deploy/Dockerfile
+      target: backend
+    environment:
+      OPENCODE_PASSWORD: ${OPENCODE_PASSWORD:?Set a random server password of at least 32 characters}
+      OPENCODE_SERVER_BRAND: pp
+      PP_ROUTER_API_KEY: ${PP_ROUTER_API_KEY:?Set the shared PP router token of at least 32 characters}
+      PP_ROUTER_BASE_URL: ${PP_ROUTER_BASE_URL:?Set the HTTPS base URL of your shared PP router ending in /v1}
+    volumes:
+      - opencode-data:/var/lib/opencode
+      - workspace:/workspace
+      - operator-home:/home/bun
+      - type: bind
+        source: ./opencode.json
+        target: /config/opencode.json
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+    healthcheck:
+      test:
+        - CMD
+        - bun
+        - -e
+        - 'fetch("http://127.0.0.1:4096/api/info", {headers: {Authorization: "Basic " + btoa("pp:" + process.env.OPENCODE_PASSWORD)}}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 5
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - ingress
+
+networks:
+  ingress:
+
+volumes:
+  workspace:
+  opencode-data:
+  operator-home:
+  caddy-data:
+  caddy-config:

@@ -1,10 +1,11 @@
 import { onMount, type ComponentProps, splitProps } from "solid-js"
 import { iconNames, isIconName, getIcon, type IconName } from "../catalog"
 import "./icon.css"
+import { BRAND } from "../../brand"
 
-const spriteID = "opencode-v2-icon-sprite"
+const spriteID = `${BRAND}-v2-icon-sprite`
 
-const symbol = (name: IconName) => `opencode-v2-icon-${name}`
+const symbol = (name: IconName) => `${BRAND}-v2-icon-${name}`
 
 let spriteInserted = false
 

@@ -1,3 +1,5 @@
+import { BRAND } from "@opencode/ui/brand"
+
 export const lineCommentStyles = `
 [data-annotation-slot] {
   padding: 12px;
@@ -275,7 +277,7 @@ export function installLineCommentStyles() {
 
   if (typeof document === "undefined") return
 
-  const id = "opencode-line-comment-styles"
+  const id = `${BRAND}-line-comment-styles`
 
   if (document.getElementById(id)) {
     installed = true

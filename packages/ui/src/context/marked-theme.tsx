@@ -1,7 +1,11 @@
 import type { ThemeRegistrationResolved } from "@pierre/diffs"
+import { BRAND } from "../brand"
+
+/** Shiki theme name; it also appears as a class on every highlighted code block. */
+export const SHIKI_THEME = BRAND === "pp" ? "PP" : "OpenCode"
 
 export const OpenCodeTheme = {
-  name: "OpenCode",
+  name: SHIKI_THEME,
   bg: "var(--color-background-stronger)",
   fg: "var(--text-base)",
   colors: {

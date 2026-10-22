@@ -16,6 +16,7 @@ import { Persistence } from "@/runtime/persistence/schema"
 import type { HomeController } from "../model"
 import { useGlobal } from "@/runtime/server/runtime"
 import { useRevealProject } from "./reveal"
+import { helpLink } from "@/shell/pp/config"
 
 export const HomeServersSchema = Schema.Struct({
   collapsed: Persistence.record(Persistence.fallback(Schema.Boolean, () => false)),
@@ -23,6 +24,7 @@ export const HomeServersSchema = Schema.Struct({
 
 export function createHomeProjectsController(home: HomeController) {
   const platform = usePlatform()
+  const help = helpLink(platform)
   const pickDirectory = useDirectoryPicker()
   const dialog = useDialog()
   const language = useLanguage()
@@ -181,7 +183,7 @@ export function createHomeProjectsController(home: HomeController) {
     },
     utility: {
       settings: openSettings,
-      help: () => platform.openExternal("https://opencode.ai/desktop-feedback"),
+      help: help ? () => platform.openExternal(help) : undefined,
     },
   }
 }

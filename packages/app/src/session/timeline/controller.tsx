@@ -115,7 +115,7 @@ export function createTimelineController(input: { session: TimelineSessionSource
   })
 
   const titleValue = createMemo(() => input.session.data.info()?.title)
-  const titleLabel = createMemo(() => sessionTitle(titleValue()) ?? language.t("session.tab.session"))
+  const titleLabel = createMemo(() => sessionTitle(titleValue(), language.t) ?? language.t("session.tab.session"))
 
   const parentMessages = createMemo(() => {
     const id = input.session.data.parentID()
@@ -124,7 +124,7 @@ export function createTimelineController(input: { session: TimelineSessionSource
   })
 
   const parentTitle = createMemo(
-    () => sessionTitle(input.session.data.parent()?.title) ?? language.t("session.tab.session"),
+    () => sessionTitle(input.session.data.parent()?.title, language.t) ?? language.t("session.tab.session"),
   )
 
   const childTaskDescription = createMemo(() => {
@@ -279,7 +279,7 @@ export function createTimelineController(input: { session: TimelineSessionSource
 
   function DeleteDialog(props: { sessionID: string }) {
     const name = createMemo(
-      () => sessionTitle(data.session.get(props.sessionID)?.title) ?? language.t("session.tab.session"),
+      () => sessionTitle(data.session.get(props.sessionID)?.title, language.t) ?? language.t("session.tab.session"),
     )
 
     const confirm = async () => {

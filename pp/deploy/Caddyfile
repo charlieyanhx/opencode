@@ -1,0 +1,3 @@
+{$PP_DOMAIN} {
+	import /etc/caddy/site.caddy
+}
