@@ -17,7 +17,7 @@ calls the original PP router directly and does not start that gateway.
 The existing project is [Principle-of-Procrastination/pp-router](https://github.com/Principle-of-Procrastination/pp-router),
 a FastAPI/LiteLLM router with English/Chinese complexity classification and model
 fallbacks. Its original `/chat` and `/chat/stream` endpoints accept text chat and
-emit a custom response/SSE format. The companion `opencode-compat` branch adds
+emit a custom response/SSE format. The companion `pp-code-api` branch adds
 `/v1/chat/completions` for message history, tool calls/results and OpenAI streams,
 using that project's existing routing policy. Deploy that compatibility change
 before enabling shared mode; pointing OpenCode at the old `/chat` endpoint is not

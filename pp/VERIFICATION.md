@@ -61,7 +61,7 @@ compliance. This is a private single-operator implementation.
   `pp_session_<port>`; `pp` and `opencode` Basic usernames accepted, others rejected.
 - `bun run pp:dev` renders again (dev icon middleware fix).
 - Pre-push `bun run check` passed; hosted PP workflow passed on `9225b3c`.
-- `bun run pp:router-check` against pp-router `opencode-compat` (`577ed39`) run locally with
+- `bun run pp:router-check` against pp-router `pp-code-api` (`0ce3cf3`) run locally with
   placeholder provider keys: wrong key rejected, `auto, step-3.7-flash, glm-4.7, glm-5.1` listed;
   tool-call steps fail with `upstream_error` as expected without real keys.
 

@@ -9,7 +9,7 @@ shared-router connection and deployment setup. No hosted deployment has been mad
 The router of record is https://github.com/Principle-of-Procrastination/pp-router.
 The fork defaults to its `/v1` compatibility API and `auto` model, preserving its
 English/Chinese classifier and LiteLLM fallback policy. The companion
-`opencode-compat` branch adds the tool-preserving compatibility API. The fork's
+`pp-code-api` branch adds the tool-preserving compatibility API. The fork's
 initial gateway remains an explicit standalone development option only.
 
 ## Product direction
