@@ -18,7 +18,7 @@ PP Code's backend calls the PP router's OpenAI-compatible API. Nothing else talk
 | `POST {PP_ROUTER_BASE_URL}/chat/completions`, `stream: true`, function `tools`, `tool_choice` | stream text and tool-call deltas, end with `data: [DONE]`, accept `tool` result messages on the next request |
 | `Authorization: Bearer <PP_ROUTER_API_KEY>`                                                   | accept only that key (`PPROUTER_API_KEY` on the router)                                                      |
 
-1. **Get the router code.** The `/v1` compatibility layer is pp-router commit `0ce3cf3` on branch
+1. **Get the router code.** The `/v1` compatibility layer is pp-router commit `d736da6` on branch
    [`pp-code-api`](https://github.com/Principle-of-Procrastination/pp-router/tree/pp-code-api).
    Review it and merge it into `master` before deploying.
 2. **Deploy** it behind HTTPS, ideally on the same private network as PP Code. Provider keys
