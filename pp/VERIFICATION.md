@@ -49,3 +49,21 @@
 The fixture, schema, routing and configuration checks do not establish live
 provider availability, regional data residency, multi-tenant isolation or regulatory
 compliance. This is a private single-operator implementation.
+
+# Verification record — 2026-10-22
+
+- White-label pass (`160a535`, `593b5d6`, `9225b3c`): app, ui, session-ui, gui-extensions, server
+  and CLI type checks; 772 app unit tests; PP copy test (`runtime/i18n/pp.test.ts`) fails on any
+  upstream name in en/zh/zht; new server auth tests fail when the PP cookie name is reverted.
+- Production PP build inspected in a browser (English and Simplified Chinese): no upstream names in
+  page text or links, devtools storage/DOM/cookie names use `pp`, no source maps, `index.html`
+  contains no "opencode". Legacy `opencode_session_<port>` cookie still signs in; new pairing sets
+  `pp_session_<port>`; `pp` and `opencode` Basic usernames accepted, others rejected.
+- `bun run pp:dev` renders again (dev icon middleware fix).
+- Pre-push `bun run check` passed; hosted PP workflow passed on `9225b3c`.
+- `bun run pp:router-check` against pp-router `opencode-compat` (`577ed39`) run locally with
+  placeholder provider keys: wrong key rejected, `auto, step-3.7-flash, glm-4.7, glm-5.1` listed;
+  tool-call steps fail with `upstream_error` as expected without real keys.
+
+Still unverified: deployment image build (added to CI, not yet run), any live provider call,
+hosted TLS, and mainland network access. See [HANDOFF](HANDOFF.md).

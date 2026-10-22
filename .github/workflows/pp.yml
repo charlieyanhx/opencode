@@ -45,3 +45,17 @@ jobs:
             !packages/app/dist/**/*.map
           if-no-files-found: error
           retention-days: 7
+
+  images:
+    # Builds the deployment images the hosting engineer will run; nothing is pushed to a registry.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - name: Build backend image
+        run: docker build --file pp/deploy/Dockerfile --target backend --tag pp-code-backend:ci .
+      - name: Build web image
+        run: docker build --file pp/deploy/Dockerfile --target web --tag pp-code-web:ci .
+      - name: Check the web image serves the PP build
+        run: |
+          docker run --rm --entrypoint sh pp-code-web:ci -c 'grep -q "<title>PP Code</title>" /srv/index.html && ! grep -qi opencode /srv/index.html && ! find /srv -name "*.map" | grep -q .'

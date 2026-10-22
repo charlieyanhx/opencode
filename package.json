@@ -28,6 +28,7 @@
     "check": "bun run lint && bun run typecheck && bun run pp:check",
     "pp:dev": "bun --env-file=pp/.env pp/dev.ts",
     "pp:check": "bun run --cwd pp typecheck && bun run --cwd pp test",
+    "pp:router-check": "bun --env-file=pp/.env pp/router-check.ts",
     "typecheck:profile": "bun script/profile-typecheck.ts",
     "typecheck:profile:packages": "bun script/profile-typecheck-packages.ts",
     "upgrade-opentui": "bun run script/upgrade-opentui.ts",

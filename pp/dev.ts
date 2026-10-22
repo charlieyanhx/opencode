@@ -2,7 +2,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { loadConfig } from "./router/src/config"
 import { start } from "./router/src/index"
-import { openCodeConfig, sharedRouterConfig } from "./opencode"
+import { openCodeConfig, routerModelFromEnv, sharedRouterConfig } from "./opencode"
 import { browserLink } from "./connect"
 
 const root = fileURLToPath(new URL("../", import.meta.url))
@@ -33,7 +33,7 @@ const state = path.join(root, "pp/.local")
 const routerHost = config?.hostname === "::1" ? "[::1]" : config?.hostname
 const provider = config
   ? openCodeConfig(config, `http://${routerHost}:${config.port}/v1`)
-  : sharedRouterConfig(process.env.PP_ROUTER_BASE_URL ?? "")
+  : sharedRouterConfig(process.env.PP_ROUTER_BASE_URL ?? "", routerModelFromEnv(process.env))
 const sharedURL = new URL(provider.providers.pp.settings.baseURL)
 if (
   ["127.0.0.1", "localhost", "[::1]"].includes(sharedURL.hostname) &&

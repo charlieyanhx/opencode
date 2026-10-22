@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { configure } from "./router/src/config"
-import { openCodeConfig, sharedRouterConfig } from "./opencode"
+import { openCodeConfig, routerModelFromEnv, sharedRouterConfig } from "./opencode"
 
 describe("OpenCode router configuration", () => {
   test("uses the existing PP router's automatic routing policy directly", () => {
@@ -16,6 +16,20 @@ describe("OpenCode router configuration", () => {
       { action: "provider.use", resource: "*", effect: "deny" },
       { action: "provider.use", resource: "pp", effect: "allow" },
     ])
+  })
+
+  test("pins one router model with its declared limits from the launcher environment", () => {
+    const model = routerModelFromEnv({
+      PP_ROUTER_MODEL: "glm-5.1",
+      PP_ROUTER_CONTEXT_TOKENS: "131072",
+      PP_ROUTER_OUTPUT_TOKENS: "16384",
+    })
+    const result = sharedRouterConfig("https://router.example.cn/v1", model)
+    expect(result.model).toBe("pp/glm-5.1")
+    expect(result.providers.pp.models["glm-5.1"].limit).toEqual({ context: 131072, output: 16384 })
+    expect(routerModelFromEnv({})).toEqual({ id: "auto", context: 16384, output: 4096 })
+    expect(() => routerModelFromEnv({ PP_ROUTER_MODEL: "pp/../auto" })).toThrow()
+    expect(() => routerModelFromEnv({ PP_ROUTER_CONTEXT_TOKENS: "lots" })).toThrow()
   })
 
   test("exposes only regional aliases and public model metadata", () => {
