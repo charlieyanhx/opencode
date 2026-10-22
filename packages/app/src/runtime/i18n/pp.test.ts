@@ -30,6 +30,13 @@ describe("PP copy", () => {
     expect(leaks).toEqual([])
   })
 
+  test.each(["zh", "zht"] as const)("%s translates every English key", (locale) => {
+    const own = { ...(locale === "zh" ? { ...zh, ...uiZh } : { ...zht, ...uiZht }), ...ppDictionary(locale, {}) }
+    const untranslated = Object.keys(base).filter((key) => !exempt(key) && !(key in own))
+
+    expect(untranslated).toEqual([])
+  })
+
   test("overrides only keys the source dictionaries define", () => {
     const added = Object.keys(ppDictionary("en", {})).filter((key) => !(key in base))
 

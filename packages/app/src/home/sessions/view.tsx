@@ -408,7 +408,8 @@ function HomeSessionSearchResultRow(
     onHoverSession: (sessionID: string | undefined) => void
   },
 ) {
-  const title = createMemo(() => sessionLabel(props.record.session))
+  const language = useLanguage()
+  const title = createMemo(() => sessionLabel(props.record.session, language.t))
   const location = createMemo(() => props.location(props.record))
   const showProjectName = () => props.showProjectName && props.record.projectName
   const key = () => homeSessionSearchKey(props.record)
@@ -501,7 +502,8 @@ function HomeSessionRow(
     onHoverSession: (sessionID: string | undefined) => void
   },
 ) {
-  const title = createMemo(() => sessionLabel(props.record.session))
+  const language = useLanguage()
+  const title = createMemo(() => sessionLabel(props.record.session, language.t))
   const location = createMemo(() => props.location(props.record))
   const showProjectName = () => props.showProjectName && props.record.projectName
   const sessionID = () => props.record.session.id

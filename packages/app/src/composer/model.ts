@@ -228,7 +228,7 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
       id: `custom.${item.name}`,
       trigger: item.name,
       title: item.name,
-      description: item.description,
+      description: builtinCommandDescription(language, item.description),
       type: "custom" as const,
     })),
     ...command.options
@@ -466,6 +466,17 @@ export function createComposerModel(adapter: ComposerAdapter, options?: { queue?
 
   // SAFETY: the `model` getter defined on the controller above completes `ComposerModel`.
   return controller as ComposerModel
+}
+
+// The server describes its built-in commands in English; show them in the UI language when unchanged.
+const builtinCommandKeys = {
+  "guided AGENTS.md setup": "command.builtin.init.description",
+  "review changes [commit|branch|pr], defaults to uncommitted": "command.builtin.review.description",
+} as const
+
+function builtinCommandDescription(language: ReturnType<typeof useLanguage>, description: string | undefined) {
+  const key = description && builtinCommandKeys[description as keyof typeof builtinCommandKeys]
+  return key ? language.t(key) : description
 }
 
 function composerErrorMessage(language: ReturnType<typeof useLanguage>, cause: unknown) {

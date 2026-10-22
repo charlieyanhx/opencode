@@ -522,7 +522,7 @@ export const SettingsWorkspaces: Component<{
                           <For each={linked()}>
                             {(session) => (
                               <div class="settings-workspaces-session">
-                                <span>{sessionLabel(session)}</span>
+                                <span>{sessionLabel(session, language.t)}</span>
                                 <Show when={linked().length > 1 ? sessionTime(session) : undefined}>
                                   {(time) => <span class="settings-workspaces-session-time">{time()}</span>}
                                 </Show>

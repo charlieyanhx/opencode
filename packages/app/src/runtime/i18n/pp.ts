@@ -28,6 +28,7 @@ const en = {
   "server.connect.link.expired":
     "This pairing link expired or was already used. Ask your PP Code administrator for a new one.",
   "server.connect.password.hint": "Ask your PP Code administrator for the server password.",
+  "server.connect.pair.link": "Ask your PP Code administrator for a pairing link.",
   "server.connect.scan.description": "Point your camera at the pairing QR code.",
   "server.connect.scan.invalid": "This is not a PP Code pairing code.",
   "server.row.incompatible":
@@ -80,6 +81,7 @@ const zh: Overrides = {
   "server.connect.link.legacy": "此配对码来自较旧的服务器版本。请让 PP Code 管理员更新服务器。",
   "server.connect.link.expired": "此配对链接已过期或已被使用。请向 PP Code 管理员获取新的链接。",
   "server.connect.password.hint": "请向 PP Code 管理员获取服务器密码。",
+  "server.connect.pair.link": "请向 PP Code 管理员获取配对链接。",
   "server.connect.scan.description": "将摄像头对准配对二维码。",
   "server.connect.scan.invalid": "这不是 PP Code 配对码。",
   "server.row.incompatible": "此服务器版本（{{version}}）与此应用不兼容。请升级服务器以继续。",
@@ -127,6 +129,7 @@ const zht: Overrides = {
   "server.connect.link.legacy": "此配對碼來自較舊的伺服器版本。請讓 PP Code 管理員更新伺服器。",
   "server.connect.link.expired": "此配對連結已過期或已被使用。請向 PP Code 管理員取得新的連結。",
   "server.connect.password.hint": "請向 PP Code 管理員取得伺服器密碼。",
+  "server.connect.pair.link": "請向 PP Code 管理員取得配對連結。",
   "server.connect.scan.description": "將相機對準配對 QR 碼。",
   "server.connect.scan.invalid": "這不是 PP Code 配對碼。",
   "server.row.incompatible": "此伺服器版本（{{version}}）與此應用程式不相容。請升級伺服器以繼續。",

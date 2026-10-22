@@ -250,7 +250,10 @@ export function ConnectServerScreen(props: { url?: string } = {}) {
           <Show when={state.method === "link"}>
             <footer>
               <p>{language.t("server.connect.pair.link")}</p>
-              <code dir="ltr">opencode pair</code>
+              {/* PP users get pairing links from their administrator, not from a CLI. */}
+              <Show when={!pp}>
+                <code dir="ltr">opencode pair</code>
+              </Show>
             </footer>
           </Show>
         </Show>

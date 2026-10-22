@@ -115,6 +115,9 @@ const createModelsController = (directory: Accessor<string | undefined>) => {
 
     if (latestSet().has(key)) return true
 
+    // PP builds offer only the models the PP router exposes, so they start visible.
+    if (import.meta.env.VITE_PP_ENABLED === "true" && model.providerID === "pp") return true
+
     // Models without a parseable release date stay visible.
     return !Number.isFinite(release().get(key) ?? NaN)
   }

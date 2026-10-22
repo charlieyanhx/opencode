@@ -262,6 +262,8 @@ export function createDefaultOptions<T>(style: FileDiffOptions<T, undefined>["di
     disableBackground: false,
     expansionLineCount: 20,
     hunkSeparators: "line-info-basic",
+    // The language provider keeps <html lang> current (zh-Hans, zh-Hant, en, …); patched @pierre/diffs reads it.
+    hunkSeparatorLocale: typeof document === "undefined" ? undefined : document.documentElement.lang,
     lineDiffType: "word-line",
     maxLineDiffLength: 1000,
     maxLineLengthForHighlighting: 1000,

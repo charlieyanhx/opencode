@@ -57,6 +57,8 @@ export const dict = {
   "command.project.copyID": "Copy Project ID",
   "command.provider.connect": "Connect provider",
   "command.provider.connect.description": "Sign in to OpenCode Go, OpenCode Console, or another model provider",
+  "command.builtin.init.description": "guided AGENTS.md setup",
+  "command.builtin.review.description": "review changes [commit|branch|pr], defaults to uncommitted",
   "command.settings.open": "Open settings",
   "command.session.location.cycle": "Cycle session location",
 
@@ -544,6 +546,8 @@ export const dict = {
   "home.workspaceTip": "Start next session in a new workspace to keep changes isolated",
 
   "session.tab.session": "Session",
+  "session.title.new": "New session",
+  "session.title.child": "Child session",
   "session.tab.more": "More...",
   "session.view.select": "Session view",
   "session.tab.add": "Add tab",

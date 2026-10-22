@@ -64,8 +64,10 @@ and a `backend` image running the PP Code server, for **one trusted operator**.
 - Upstream `dev` was 133 commits ahead of `pp-suite` on 2026-10-22; merge it regularly and rerun
   `bun run check` and the PP browser build.
 - The server's built-in upstream skills ("OpenCode", "Report") are hidden in the app but still
-  available to the agent. About shows the upstream version number. `/init` and `/review`
-  descriptions are English in the Chinese UI. The `x-opencode-directory`/`x-opencode-ticket`
+  available to the agent. About shows the upstream version number. The `x-opencode-directory`/`x-opencode-ticket`
   headers and the `/openapi.json` title keep upstream names.
+- `patches/@pierre%2Fdiffs@1.5.1.patch` translates the diff viewer's collapsed-lines label. Re-check it
+  when upgrading `@pierre/diffs`. `pp.test.ts` fails when an upstream merge adds English strings without
+  zh/zht translations.
 - Upstream's own workflows (`check`, `test`, `storybook`, `nix-eval`) stay queued on the fork
   because they expect upstream runners; disable them in the fork's Actions settings.
