@@ -107,6 +107,7 @@ export const dict = {
   "ui.messagePart.title.edit": "編輯",
   "ui.messagePart.title.write": "寫入",
   "ui.messagePart.option.typeOwnAnswer": "輸入自己的答案",
+  "ui.question.custom.answerPlaceholder": "輸入自己的答案…",
   "ui.messagePart.review.title": "檢閱你的答案",
 
   "ui.list.loading": "載入中",
@@ -253,7 +254,7 @@ export const dict = {
   "ui.promptInput.dropFiles.image": "拖放要新增的圖像或文件",
   "ui.promptInput.dropFiles.pdf": "拖放要新增的 PDF 或文件",
   "ui.promptInput.dropFiles.imagePdf": "拖放要新增的圖像、PDF 或文件",
-  "ui.promptInput.exitShell": "出口",
+  "ui.promptInput.exitShell": "退出",
   "ui.sessionTimeline.notice.agentChanged": "代理變更",
 
   "ui.sessionTurn.retry.attemptWaiting.one": "嘗試 {{attempt}} - 在 {{count}} 秒內重試",

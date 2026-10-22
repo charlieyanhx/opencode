@@ -481,6 +481,7 @@ export const dict = {
 
   "session.messages.jumpToLatest": "跳到最新",
   "session.question.minimize": "最小化問題",
+  "session.question.title": "問題",
   "session.question.restore": "還原問題",
 
   "session.new.project.new": "新專案",

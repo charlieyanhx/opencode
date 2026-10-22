@@ -490,6 +490,7 @@ export const dict = {
   "session.messages.loading": "正在加载消息…",
   "session.messages.jumpToLatest": "跳转到最新",
   "session.question.minimize": "收起问题",
+  "session.question.title": "问题",
   "session.question.restore": "展开问题",
   "session.new.project.new": "新建项目",
   "session.new.project.search": "搜索项目",
