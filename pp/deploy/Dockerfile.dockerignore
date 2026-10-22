@@ -39,3 +39,6 @@ pp/deploy/router.cn.json
 pp/deploy/router.global.json
 pp/.local
 pp/router.local.json
+# Source folders and theme files whose names match the secret patterns above.
+!packages/app/src/providers/credentials/**
+!packages/tui/src/theme/assets/**/opencode.json
