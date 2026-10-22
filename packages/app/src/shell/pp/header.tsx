@@ -73,17 +73,6 @@ export function PPSuiteHeader() {
             <For each={servers()}>{(server) => <option value={server.key}>{server.name}</option>}</For>
           </select>
         </Show>
-        <select
-          aria-label={language.t("settings.general.row.language.title")}
-          value={language.locale()}
-          onChange={(event) => {
-            const next = language.locales.find((locale) => locale === event.currentTarget.value)
-
-            if (next) language.setLocale(next)
-          }}
-        >
-          <For each={language.locales}>{(locale) => <option value={locale}>{language.label(locale)}</option>}</For>
-        </select>
       </div>
     </header>
   )
