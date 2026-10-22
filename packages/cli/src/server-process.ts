@@ -108,6 +108,7 @@ const processEffect = Effect.fnUntraced(function* (options: Options) {
           port,
           cors: options.cors ?? config.cors,
           password,
+          brand: process.env.OPENCODE_SERVER_BRAND === "pp" ? "pp" : undefined,
           pty: { handoff },
           simulation: truthy(process.env.OPENCODE_SIMULATE),
           database: {

@@ -22,3 +22,15 @@ test("session tokens expire, resist tampering, and are revoked by changing the p
   expect(ServerAuth.verifySession(token, { ...config, password: Option.some("rotated") }, now)).toBe(false)
   expect(ServerAuth.issueSession({ ...config, password: Option.none() })).toBeUndefined()
 })
+
+test("a PP-branded server issues PP names and still accepts the upstream ones", () => {
+  const config = ServerAuth.info(Option.some("secret"), "pp")
+  const login = (username: string) => ServerAuth.authorized({ username, password: Redacted.make("secret") }, config)
+  expect([login("pp"), login("opencode"), login("custom")]).toEqual([true, true, false])
+  expect(ServerAuth.authorized({ username: "pp", password: Redacted.make("secret") }, ServerAuth.info(Option.some("secret")))).toBe(false)
+
+  expect(ServerAuth.sessionCookieName("127.0.0.1:4096", "pp")).toBe("pp_session_4096")
+  expect(ServerAuth.sessionToken({ pp_session_4096: "new", opencode_session_4096: "old" }, "127.0.0.1:4096", config)).toBe("new")
+  expect(ServerAuth.sessionToken({ opencode_session_4096: "old" }, "127.0.0.1:4096", config)).toBe("old")
+  expect(ServerAuth.sessionToken({ pp_session_4096: "new" }, "127.0.0.1:4096", ServerAuth.info(Option.some("secret")))).toBeUndefined()
+})

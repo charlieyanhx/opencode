@@ -85,7 +85,7 @@ export function createRoutes(
 ) {
   return makeRoutes(
     options.password
-      ? ServerAuth.Config.configLayer({ password: Option.some(options.password) })
+      ? ServerAuth.Config.configLayer({ password: Option.some(options.password), brand: options.brand })
       : ServerAuth.Config.layer,
     options,
     serviceURLs,
@@ -102,7 +102,13 @@ export function createEmbeddedRoutes(
   overrides: LayerNode.Replacements = [],
   instances?: InstanceNode,
 ) {
-  return makeRoutes(ServerAuth.Config.configLayer({ password: Option.none() }), options, () => [], overrides, instances)
+  return makeRoutes(
+    ServerAuth.Config.configLayer({ password: Option.none(), brand: options.brand }),
+    options,
+    () => [],
+    overrides,
+    instances,
+  )
 }
 
 function makeRoutes<AuthError, AuthServices>(

@@ -61,6 +61,7 @@ const backend = {
   ...environment,
   PP_ROUTER_API_KEY: process.env.PP_ROUTER_API_KEY,
   OPENCODE_PASSWORD: process.env.OPENCODE_PASSWORD,
+  OPENCODE_SERVER_BRAND: "pp",
   XDG_DATA_HOME: path.join(state, "data"),
   XDG_CACHE_HOME: path.join(state, "cache"),
   XDG_CONFIG_HOME: path.join(state, "config"),

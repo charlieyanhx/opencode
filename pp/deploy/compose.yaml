@@ -37,6 +37,7 @@ services:
       target: backend
     environment:
       OPENCODE_PASSWORD: ${OPENCODE_PASSWORD:?Set a random server password of at least 32 characters}
+      OPENCODE_SERVER_BRAND: pp
       PP_ROUTER_API_KEY: ${PP_ROUTER_API_KEY:?Set the shared PP router token of at least 32 characters}
       PP_ROUTER_BASE_URL: ${PP_ROUTER_BASE_URL:?Set the HTTPS base URL of your shared PP router ending in /v1}
     volumes:
@@ -57,7 +58,7 @@ services:
         - CMD
         - bun
         - -e
-        - 'fetch("http://127.0.0.1:4096/api/info", {headers: {Authorization: "Basic " + btoa("opencode:" + process.env.OPENCODE_PASSWORD)}}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
+        - 'fetch("http://127.0.0.1:4096/api/info", {headers: {Authorization: "Basic " + btoa("pp:" + process.env.OPENCODE_PASSWORD)}}).then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
       interval: 15s
       timeout: 5s
       start_period: 90s

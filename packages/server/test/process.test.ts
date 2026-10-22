@@ -229,6 +229,39 @@ it.live("pairing links sign in browsers with a cookie and API clients with a tok
   }),
 )
 
+it.live("a PP-branded server pairs browsers with a PP cookie and keeps upstream cookies valid", () =>
+  Effect.gen(function* () {
+    const server = yield* ServerProcess.start<never, never>({
+      hostname: "127.0.0.1",
+      port: 0,
+      password: "secret",
+      brand: "pp",
+      app: { version: "test-version" },
+      database: { path: ":memory:" },
+    })
+    const base = HttpServer.formatAddress(server.address)
+    const port = new URL(base).port
+    const request = (pathname: string, init?: RequestInit) =>
+      Effect.promise(() => fetch(new URL(pathname, base), { redirect: "manual", ...init }))
+    const paired = yield* request("/api/pair", {
+      method: "POST",
+      headers: { authorization: `Basic ${btoa("pp:secret")}` },
+    })
+    expect(paired.status).toBe(200)
+    const code = ((yield* Effect.promise(() => paired.json())) as { code: string }).code
+
+    const redirect = yield* request(`/auth/connect/${code}`, { headers: { accept: "text/html" } })
+    const setCookie = redirect.headers.get("set-cookie") ?? ""
+    expect(setCookie).toContain(`pp_session_${port}=`)
+    const token = setCookie.split(";")[0].split("=")[1]
+    expect((yield* request("/api/info", { headers: { cookie: `pp_session_${port}=${token}` } })).status).toBe(200)
+    expect((yield* request("/api/info", { headers: { cookie: `opencode_session_${port}=${token}` } })).status).toBe(200)
+
+    const expired = yield* request(`/auth/connect/${code}`, { headers: { accept: "text/html" } })
+    expect(yield* Effect.promise(() => expired.text())).not.toContain("opencode")
+  }),
+)
+
 async function readUntil(reader: ReadableStreamDefaultReader<Uint8Array>, expected: string) {
   while (true) {
     const next = await reader.read()

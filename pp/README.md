@@ -123,11 +123,15 @@ In developer tools, PP builds use `pp` names for browser storage (`pp.global.dat
 (`@opencode/ui/brand`), show the default theme as `data-theme="pp"`, and set no locale
 cookie. Upstream builds keep their persisted `opencode` names. Not renamed yet:
 
-- Server-owned names: the `opencode_session_<port>` cookie and the Basic auth username
-  `opencode` (the server checks both), the `x-opencode-directory` header for global
-  session forms, and the `x-opencode-ticket` terminal header, which is part of the
-  OpenAPI contract and generated client. The `opencode HttpApi` title at `/openapi.json`
-  is also unchanged.
+- Request headers: `x-opencode-directory` (global session forms only) and the
+  `x-opencode-ticket` terminal header, which is part of the OpenAPI contract and
+  generated client. The `opencode HttpApi` title at `/openapi.json` is also unchanged.
+
+With `OPENCODE_SERVER_BRAND=pp` (set by `pp:dev` and the deploy compose file), the server
+issues `pp_session_<port>` cookies and accepts `pp` as the Basic auth username. It still
+reads `opencode_session_<port>` cookies and accepts `opencode`, so existing browser
+sessions and the CLI, TUI and desktop clients keep working. PP builds sign in as `pp`,
+so they need a server started with that flag.
 - The server's built-in upstream skills, which stay in the agent's skill list.
 
 ## Router and deployment
