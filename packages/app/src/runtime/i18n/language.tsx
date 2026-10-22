@@ -26,6 +26,7 @@ import {
   type DesktopNativeLocale,
 } from "@/runtime/i18n/desktop-native"
 import { isPPLocale, PP_LOCALES, ppDictionary } from "@/runtime/i18n/pp"
+import { BRAND } from "@opencode/ui/brand"
 
 export type Locale = DesktopNativeLocale
 
@@ -214,7 +215,7 @@ function readStoredLocale() {
   if (typeof localStorage !== "object") return
 
   try {
-    const raw = localStorage.getItem("opencode.global.dat:language")
+    const raw = localStorage.getItem(`${BRAND}.global.dat:language`)
 
     if (!raw) return
     const next = Schema.decodeUnknownOption(Schema.fromJsonString(StoredLocaleSchema))(raw)
@@ -310,7 +311,8 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
       const value = locale()
       document.documentElement.lang = intl()
       document.documentElement.dir = direction()
-      document.cookie = cookie(value)
+      // The locale cookie serves upstream web properties only, so PP builds do not set it.
+      if (!PP) document.cookie = cookie(value)
     })
 
     createEffect(() => {

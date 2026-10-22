@@ -8,17 +8,19 @@ import oc2ThemeJson from "./themes/oc-2.json"
 import { resolveThemeVariant, themeToCss } from "./resolve"
 import { resolveThemeVariantV2, themeV2ToCss } from "./v2/resolve"
 import type { DesktopTheme } from "./types"
+import { BRAND } from "../brand"
 
 export type ColorScheme = "light" | "dark" | "system"
 
+// app/vite.js rewrites the inline preload script to the same PP names.
 const STORAGE_KEYS = {
-  THEME_ID: "opencode-theme-id",
-  COLOR_SCHEME: "opencode-color-scheme",
-  THEME_CSS_LIGHT: "opencode-theme-css-light",
-  THEME_CSS_DARK: "opencode-theme-css-dark",
+  THEME_ID: `${BRAND}-theme-id`,
+  COLOR_SCHEME: `${BRAND}-color-scheme`,
+  THEME_CSS_LIGHT: `${BRAND}-theme-css-light`,
+  THEME_CSS_DARK: `${BRAND}-theme-css-dark`,
 } as const
 
-const THEME_STYLE_ID = "oc-theme"
+const THEME_STYLE_ID = BRAND === "pp" ? "pp-theme" : "oc-theme"
 
 let files: Record<string, () => Promise<{ default: DesktopTheme }>> | undefined
 
@@ -165,9 +167,10 @@ function applyThemeCss(theme: DesktopTheme, themeId: string, mode: "light" | "da
   ${v2}
 }`
 
-  document.getElementById("oc-theme-preload")?.remove()
+  document.getElementById(BRAND === "pp" ? "pp-theme-preload" : "oc-theme-preload")?.remove()
   ensureThemeStyleElement().textContent = fullCss
-  document.documentElement.dataset.theme = themeId
+  // PP builds show the default theme as `pp`; the stored id stays `oc-2`.
+  document.documentElement.dataset.theme = BRAND === "pp" && themeId === "oc-2" ? "pp" : themeId
   document.documentElement.dataset.colorScheme = mode
   document.documentElement.style.backgroundColor = isDark ? "#080808" : "#fafafa"
 

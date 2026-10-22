@@ -16,6 +16,8 @@ const upstreamPublicFiles = [
   "social-share-zen.png",
   "web-app-manifest-192x192.png",
   "web-app-manifest-512x512.png",
+  // Inlined into index.html, so the standalone copy is unused.
+  "oc-theme-preload.js",
 ]
 
 export function icons(channel: string): Plugin {

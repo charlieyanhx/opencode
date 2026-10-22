@@ -118,10 +118,17 @@ the locales with reviewed PP copy; any other stored or browser locale reads as E
 See the app's PP localization notes for the review sources. Assistant response
 language and document translation are separate from UI localization.
 
-Still visible to someone using developer tools: storage keys, cookie and header names,
-the theme id and DOM ids keep their upstream `opencode` prefixes, and the server keeps
-the built-in upstream skills in the agent's skill list. Renaming them changes the
-client/server contract and persisted state, so it is tracked separately.
+In developer tools, PP builds use `pp` names for browser storage (`pp.global.dat:*`,
+`pp-drafts`, `pp-theme-id`), DOM ids, icon ids, events and highlight names
+(`@opencode/ui/brand`), show the default theme as `data-theme="pp"`, and set no locale
+cookie. Upstream builds keep their persisted `opencode` names. Not renamed yet:
+
+- Server-owned names: the `opencode_session_<port>` cookie and the Basic auth username
+  `opencode` (the server checks both), the `x-opencode-directory` header for global
+  session forms, and the `x-opencode-ticket` terminal header, which is part of the
+  OpenAPI contract and generated client. The `opencode HttpApi` title at `/openapi.json`
+  is also unchanged.
+- The server's built-in upstream skills, which stay in the agent's skill list.
 
 ## Router and deployment
 

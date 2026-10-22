@@ -1,7 +1,8 @@
 import { useLocation } from "@solidjs/router"
 import { createEffect } from "solid-js"
+import { BRAND } from "@opencode/ui/brand"
 
-const LAST_ROUTE_KEY = "opencode.pwa.last-route"
+const LAST_ROUTE_KEY = `${BRAND}.pwa.last-route`
 
 export function isStandalone() {
   return (
