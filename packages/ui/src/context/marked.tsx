@@ -3,6 +3,7 @@ import { bundledLanguages, type BundledLanguage } from "shiki"
 import { createSimpleContext } from "./helper"
 import { createMarkdownParser } from "./marked-parser"
 import { registerOpenCodeTheme } from "./marked-theme-register"
+import { SHIKI_THEME } from "./marked-theme"
 
 export { OpenCodeTheme } from "./marked-theme"
 
@@ -13,7 +14,7 @@ export const { use: useMarked, provider: MarkedProvider } = createSimpleContext(
   init: () =>
     createMarkdownParser(async (code, language) => {
       const highlighter = await getSharedHighlighter({
-        themes: ["OpenCode"],
+        themes: [SHIKI_THEME],
         langs: [],
         preferredHighlighter: "shiki-wasm",
       })
@@ -24,7 +25,7 @@ export const { use: useMarked, provider: MarkedProvider } = createSimpleContext(
 
       return highlighter.codeToHtml(code, {
         lang: name,
-        theme: "OpenCode",
+        theme: SHIKI_THEME,
         tabindex: false,
       })
     }),
